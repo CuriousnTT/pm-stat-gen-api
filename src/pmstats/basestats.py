@@ -24,7 +24,7 @@ def getBaseStats(gen = None):
     else:
         baseStats = {HP, Atk, Def, SpA, SpD, Spe}
         genValue = "generations 2 and later"
-    baseStatsInfo = {"info": f"There are {len(baseStats)} stats which influence combat in {genValue}. Valid pokemon have a value for each.",
+    baseStatsInfo = {"info": f"There are {len(baseStats)} stats which impact combat in {genValue}. Valid pokemon have a value for each.",
                      "length": len(baseStats),
                      "Base Stats": baseStats}
     return baseStatsInfo

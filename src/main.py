@@ -10,7 +10,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello" : "World"}
+    return {"info" : "Welcome to the world of pmStatGen-API! Go to /docs for information about how to use it!"}
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
