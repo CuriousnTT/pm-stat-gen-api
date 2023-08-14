@@ -7,6 +7,7 @@ from pmgens.genenum import PmGen
 from pmgens.genenum import SupportedGen
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
+from pmtypes.pmtypes import createPmTypes
 
 #Code
 app = FastAPI()
@@ -23,10 +24,10 @@ def get_item(item_id: int, q: Union[str, None] = None):
 def get_stats_for_a_generation(q: Union[PmGen, None] = None):
     if q == None:
         return {"generation": "Defaults to 2 and later",
-                "info": getBaseStats()}
+                "data": getBaseStats()}
     else:
         return {"generation": q, 
-                "info": getBaseStats(q)}
+                "data": getBaseStats(q)}
 
 @app.get("/generations")
 def get_generations():
@@ -39,5 +40,15 @@ def get_supported_generations():
             "generations": list(SupportedGen)}
 
 @app.get("/games")
-def get_games(q: Union[PmGen, None] = None):
-    return getGames(q)
+def get_games():
+    return getGames()
+
+@app.get("/games/{generation}")
+def get_games_from_one_generation(generation: PmGen):
+    return getGames(generation)
+
+@app.get("/types/{generation}")
+def get_types(generation: PmGen, asIntended: Union[bool, None] = None):
+    if asIntended != None:
+        return createPmTypes(generation, asIntended)
+    return createPmTypes(generation)
