@@ -16,7 +16,7 @@ class SupportedGen(str, Enum):
 
 
 def isSupported(gen: PmGen):
-        if isinstance(gen, SupportedGen):
+        if gen in list(SupportedGen):
             return True
         else:
             return False

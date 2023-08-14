@@ -59,44 +59,45 @@ legendsArceus = PmGame("Legends Arceus", "gen8")
 scarlet = PmGame("Scarlet", "gen9")
 violet = PmGame("Violet", "gen9")
 
-games = {PmGen.GEN1: {
+games = {
+    PmGen.GEN1: {
         "games": {red, blue, yellow},
         "remakes": None,
-        "shorthand": "RBY",
+        "code": "RBY",
         "supported": isSupported(PmGen.GEN1)},
     PmGen.GEN2: {"games": {gold, silver, crystal},
         "remakes": None,
-        "shorthand": "GSC",
+        "code": "GSC",
         "supported": isSupported(PmGen.GEN2)},
     PmGen.GEN3: {"games": {ruby, sapphire, emerald},
         "remakes": {fireRed, leafGreen},
-        "shorthand": "RSE",
+        "code": "RSE",
         "supported": isSupported(PmGen.GEN3)},
     PmGen.GEN4: {"games": {diamond, pearl, platinum},
         "remakes": {heartGold, soulSilver},
-        "shorthand": "DPPt",
+        "code": "DPPt",
         "supported": isSupported(PmGen.GEN4)},
     PmGen.GEN5: {"games": {black, white, black2, white2},
         "remakes": None,
-        "shorthand": "BW",
+        "code": "BW",
         "supported": isSupported(PmGen.GEN5)},
     PmGen.GEN6: {"games": {pmX, pmY},
         "remakes": {alphaSapphire, omegaRuby},
-        "shorthand": "XY",
+        "code": "XY",
         "supported": isSupported(PmGen.GEN6)},
     PmGen.GEN7: {"games": {sun, moon},
         "remakes": {ultraSun, ultraMoon, letsGoEevee, letsGoPikachu},
-        "shorthand": "SM",
+        "code": "SM",
         "supported": isSupported(PmGen.GEN7)},
     PmGen.GEN8: {"games": {sword, shield, legendsArceus},
         "remakes": {brilliantDiamond, shiningPearl},
-        "shorthand": "SS",
+        "code": "SS",
         "supported": isSupported(PmGen.GEN8)},
     PmGen.GEN9: {"games": {scarlet, violet},
         "remakes": None,
-        "shorthand": "SV",
+        "code": "SV",
         "supported": isSupported(PmGen.GEN9)}
-    }
+}
 
 def getGames(gen: Union[PmGen, None] = None):
     if gen == None:
