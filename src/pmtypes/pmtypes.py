@@ -1,5 +1,5 @@
 class PmType:
-    def __init__(self, name, weakTo, resists, immuneTo):
+    def __init__(self, name: str , weakTo, resists, immuneTo):
         self.name = name
         self.weakTo = weakTo
         self.resists = resists

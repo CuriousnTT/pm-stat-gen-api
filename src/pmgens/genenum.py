@@ -11,13 +11,12 @@ class PmGen(str, Enum):
     GEN8 = "gen8"
     GEN9 = "gen9"
 
+class SupportedGen(str, Enum):
+    GEN1 = "gen1"
 
-"RBY"
-"GSC"
-"RSE"
-"DPPt"
-"BW"
-"XY"
-"SM"
-"SWSH"
-"SV"
+
+def isSupported(gen: PmGen):
+        if isinstance(gen, SupportedGen):
+            return True
+        else:
+            return False
