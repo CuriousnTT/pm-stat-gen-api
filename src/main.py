@@ -1,5 +1,5 @@
 #Dependencies
-from typing import Union
+from typing import Union, Literal
 from fastapi import FastAPI
 
 #Locals
@@ -8,6 +8,9 @@ from pmgens.genenum import SupportedGen
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
 from pmtypes.pmtypes import createPmTypes
+from pmnatures.natures import getNature
+from pmnatures.natures import getSpecificNatures
+from pmnatures.natures import NatureRelevantStat
 
 #Code
 app = FastAPI()
@@ -52,3 +55,14 @@ def get_types(generation: PmGen, asIntended: Union[bool, None] = None):
     if asIntended != None:
         return createPmTypes(generation, asIntended)
     return createPmTypes(generation)
+
+@app.get("/nature")
+def get_nature():
+    return getNature()
+
+@app.get("/natures/{effect}/{stat}")
+def get_nature_with_effect_on_stat(effect: Literal["boosts", "reduces"], stat: NatureRelevantStat):
+    boosts = True
+    if effect == "reduces":
+        boosts == False
+    return getSpecificNatures(stat, boosts)
