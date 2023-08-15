@@ -1,6 +1,7 @@
 #Dependencies
 from typing import Union, Literal
 from fastapi import FastAPI
+import uvicorn
 
 #Locals
 from pmgens.genenum import PmGen
@@ -14,6 +15,9 @@ from pmnatures.natures import NatureRelevantStat
 
 #Code
 app = FastAPI()
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", reload=True)
 
 @app.get("/")
 def read_root():
