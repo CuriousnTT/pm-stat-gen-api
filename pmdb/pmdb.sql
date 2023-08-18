@@ -1,6 +1,9 @@
-sqlite3 pmdb.sqlite3
+create table generations(generationid int);
+create table pmdex(pmid int primary key, pmname text unique, hp int, atk int, def int, spc int, spa int, spd int, spe int);
 
-create table tbl1(one text, two int);
-insert into tbl1 values('hello!',10);
-insert into tbl1 values('goodbye', 20);
-select * from tbl1;
+insert into generations values(1);
+
+insert into pmdex values(1 ,'Bulbasaur', 45, 49, 49, 65, 65, 65, 45);
+
+select * from pmdex;
+select * from generations;

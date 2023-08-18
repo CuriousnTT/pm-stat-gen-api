@@ -1,9 +1,18 @@
 from typing import Union
 from pmgens.genenum import PmGen
 from pmgens.genenum import isSupported
+from sqlalchemy import String, Column, Integer, Enum
+from pmalchemy.alchemy import Base
 
 
-class PmGame():
+class PmGame(Base):
+    __tablename__ = "pm_game"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    gen = Column(Enum(PmGen))
+    remake = Column(Integer)
+
     def __init__(self, name: str, gen: PmGen, remake: bool = False):
         self.name = name
         self.gen = gen
