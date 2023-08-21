@@ -1,17 +1,27 @@
-from enum import Enum
+import enum
 from typing import Union
+from pmalchemy.alchemy import Base
+from sqlalchemy import Enum, String
+from sqlalchemy.orm import Mapped, mapped_column
 import random
 
-from pmstats.basestats import Atk, Def, SpA, SpD, Spe, BaseStat
+from pmstats.basestats import Atk, Def, SpA, SpD, Spe
 
-class NatureRelevantStat(Enum):
+class NatureRelevantStat(enum.Enum):
     Atk = Atk.abrv
     Def = Def.abrv
     SpA = SpA.abrv
     SpD = SpD.abrv
     Spe = Spe.abrv
 
-class PmNature():
+class PmNature(Base):
+    __tablename__ = "pm_nature"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(10))
+    boosts: Mapped[Enum] = mapped_column(Enum(NatureRelevantStat), nullable=True)
+    reduces: Mapped[Enum] = mapped_column(Enum(NatureRelevantStat), nullable=True)
+
     def __init__(self, name: str, boosts: Union[NatureRelevantStat, None] = None, reduces: Union[NatureRelevantStat, None] = None):
         self.name = name
         self.boosts = boosts

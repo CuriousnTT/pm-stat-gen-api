@@ -17,7 +17,7 @@ class PmType:
                 "immuneTo": {self.immuneTo}
             }
     
-#Default is intended gen1
+#Default is intended generation 1
 defaultTypes = {
     "normal": {
         "weakTo": ["fighting"], "resists": [None], "immuneTo": ["ghost"]

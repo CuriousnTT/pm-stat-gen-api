@@ -1,6 +1,6 @@
 from enum import Enum
 
-class PmGen(str, Enum):
+class PmGen(Enum):
     GEN1 = "gen1"
     GEN2 = "gen2"
     GEN3 = "gen3"

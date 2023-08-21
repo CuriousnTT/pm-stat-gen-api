@@ -9,11 +9,11 @@ class Base(DeclarativeBase):
 
 engine = sqlalchemy.create_engine(f"sqlite+pysqlite:///{DATABASE_PATH}", echo=True)
 metadata_obj = Base.metadata
-#generation = Table(
-#        "generation",
-#        metadata_obj,
-#        Column("genNr", Integer)
-#    )
+generation = Table(
+        "generation",
+        metadata_obj,
+        Column("genNr", Integer)
+    )
 #pm_dex = Table(
 #        "pmDex",
 #        metadata_obj,
@@ -22,10 +22,10 @@ metadata_obj = Base.metadata
 #        Column("gender", Integer),
 #    )
 def show_all_tables():
-    Base.metadata.reflect(bind=engine)
+    metadata_obj.reflect(bind=engine)
 
-def clear_database():
-    Base.metadata.drop_all(bind=engine)
+def reflect_database():
+    metadata_obj.drop_all(bind=engine)
 
 def make_database():
-    Base.metadata.create_all(engine)
+    metadata_obj.create_all(engine)
