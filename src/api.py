@@ -31,36 +31,30 @@ def get_stats_for_a_generation(gen: Union[PmGen, None] = None):
         return {"generation": gen, 
                 "data": getBaseStats(gen)}
 
-#Works
 @app.get("/generations")
 def get_generations():
     return {"info": "These are the generations which currently exist and how you should refer to them when using this API.",
             "generations": list(PmGen)}
 
-#Works
 @app.get("/generations/supported")
 def get_supported_generations():
     return {"info": "These are the generations currently supported by this API",
             "generations": list(SupportedGen)}
 
-#Works
 @app.get("/games")
 def get_games():
     return getGames()
 
-#Does not work
 @app.get("/games/{generation}")
 def get_games_from_one_generation(generation: PmGen):
     return getGames(generation)
 
-#Does not work
 @app.get("/types/{generation}")
 def get_types(generation: PmGen, asIntended: Union[bool, None] = None):
     if asIntended != None:
         return createPmTypes(generation, asIntended)
     return createPmTypes(generation)
 
-#Works
 @app.get("/nature")
 def get_nature():
     return getNature()
