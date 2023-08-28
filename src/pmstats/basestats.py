@@ -1,4 +1,4 @@
-from pmgens.genenum import PmGen
+from pmgens.pmgen import PmGen
 from typing import Union
 
 class BaseStat:

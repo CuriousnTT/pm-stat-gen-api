@@ -1,6 +1,5 @@
 from typing import Union
-from pmgens.genenum import PmGen
-from pmgens.genenum import isSupported
+from pmgens.pmgen import PmGen, isSupported
 from sqlalchemy import Boolean, String, Integer, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 from pmalchemy.alchemy import Base

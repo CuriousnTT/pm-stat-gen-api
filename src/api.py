@@ -3,8 +3,8 @@ from typing import Union, Literal
 from fastapi import FastAPI
 
 #Locals
-from pmgens.genenum import PmGen
-from pmgens.genenum import SupportedGen
+from pmgens.pmgen import PmGen
+from pmgens.pmgen import SupportedGen
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
 from pmtypes.pmtypes import createPmTypes
@@ -59,7 +59,6 @@ def get_types(generation: PmGen, asIntended: Union[bool, None] = None):
 def get_nature():
     return getNature()
 
-#Works
 @app.get("/natures/{effect}/{stat}")
 def get_natures_with_effect_on_stat(effect: Literal["boosts", "reduces"], stat: NatureRelevantStat):
     boosts = True
