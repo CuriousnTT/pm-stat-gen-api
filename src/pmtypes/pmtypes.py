@@ -1,7 +1,8 @@
-from pmgens.pmgen import PmGen, Generation
-from pmalchemy.alchemy import Base, session
+from typing import Union
 from sqlalchemy import Integer, String, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from pmgens.pmgen import PmGen, Generation
+from pmalchemy.alchemy import Base, session
 
 class PmType(Base):
     __tablename__ = 'types'
@@ -11,9 +12,10 @@ class PmType(Base):
     generation_id: Mapped[int] = mapped_column(Integer, ForeignKey('generation.id'))
     generation: Mapped[Generation] = relationship('Generation', backref='types')
     
-    def __init__(self, name: str, gen: Generation):
+    def __init__(self, name: str, generation: Generation):
         self.name = name
-        self.generation = gen
+        self.generation = generation
+        self.generation_id = generation.id
 
     def __str__(self):
         return f"{self.name}"
@@ -22,17 +24,17 @@ class PmType(Base):
         return self.name
     
 class PmTypeRelations(Base):
-    __tablename__ = 'typerelations'
+    __tablename__ = 'type_relations'
     attack_type: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), primary_key=True)
     defending_type: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), primary_key=True)
     effectiveness: Mapped[float] = mapped_column(Float)
 
-    def __init__(self, attack_type: int, defending_type: int, effectiveness: float = 1.0):
+    def __init__(self, attack_type: int, defending_type: int, effectiveness: Union[float, None] = 1.0):
         self.attack_type = attack_type
         self.defending_type = defending_type
         self.effectiveness = effectiveness
 
-#Default is intended generation 1
+#Default is generation 1
 defaultTypes = {
     "normal": {
         "weak_to": ["fighting"], "resists": [None], "immune_to": ["ghost"]
@@ -151,12 +153,13 @@ def getGenerationsForTypes():
     gen6 = q(6)
     return [gen1, gen2, gen6]
 
-def addTypeToTable(name, gen):
+def addTypeToTable(name, gen:Generation):
         type = session.query(PmType).filter_by(
             name=name, generation=gen).first()
         if type is None:
-            type = PmType(name=name, gen=gen)
+            type = PmType(name=name, generation=gen)
             session.add(type)
+        print(type.generation_id, type.name)
 
 
 def getTypesTable():
@@ -168,6 +171,7 @@ def getTypesTable():
         addTypeToTable(name, gen2)
     for name in gen6ToCurrentChanges:
         addTypeToTable(name, gen6)
+
     session.commit()
 
 def getPmTypes(gen: PmGen):

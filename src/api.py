@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 #Locals
 from pmgens.pmgen import PmGen
-from pmgens.pmgen import SupportedGen
+from pmgens.pmgen import SupportedGen, getGenerations
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
 from pmtypes.pmtypes import getPmTypes
@@ -33,8 +33,8 @@ def get_stats_for_a_generation(gen: Union[PmGen, None] = None):
 
 @app.get("/generations")
 def get_generations():
-    return {"info": "These are the generations which currently exist and how you should refer to them when using this API.",
-            "generations": list(PmGen)}
+    return {"info": "These are the generations which currently exist. To reference them with this API use the short_name",
+            "generations": getGenerations()}
 
 @app.get("/generations/supported")
 def get_supported_generations():

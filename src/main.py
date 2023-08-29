@@ -3,6 +3,7 @@ import uvicorn
 from pmalchemy.alchemy import clean_database, make_database, show_all_tables
 from pmgens.pmgen import getGenerationsTable
 from pmtypes.pmtypes import getTypesTable
+
 if __name__ == "__main__":
 
     #Set up SQL Database

@@ -34,18 +34,31 @@ class Generation(Base):
     def __repr__(self):
         return self.short_name
     
-def getGenerationsTable():
-    id = 0
-    for x in list(PmGen):
-        id += 1
-        name = f"generation{id}"
-        generation = session.query(Generation).filter_by(id=id).first()
-        if generation is None:
-            session.add(Generation(name=name, short_name=x.value))
-    session.commit()
-
 def isSupported(gen: PmGen):
         if gen in list(SupportedGen):
             return True
         else:
             return False
+    
+def getGenerationsTable():
+    id = 0
+    for x in list(PmGen):
+        id += 1
+        name = f"generation {id}"
+        generation = session.query(Generation).filter_by(id=id).first()
+        if generation is None:
+            session.add(Generation(name=name, short_name=x.value))
+    session.commit()
+
+def getGenerations():
+    id = 1
+    generations = []
+    while id < 10:
+        gen = session.get(Generation, id)
+        generation = {"id": gen.id,
+               "name": gen.name,
+               "short_name": gen.short_name,
+               "is_supported:": isSupported(gen.short_name)}
+        generations.append(generation)
+        id += 1
+    return generations
