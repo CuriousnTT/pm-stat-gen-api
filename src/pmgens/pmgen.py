@@ -1,5 +1,5 @@
 from enum import Enum
-from pmalchemy.alchemy import Base
+from pmalchemy.alchemy import Base, session
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -21,8 +21,8 @@ class Generation(Base):
     __tablename__ = "generation"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String)
-    short_name: Mapped[str] = mapped_column(String(5))
+    name: Mapped[str] = mapped_column(String, unique=True)
+    short_name: Mapped[str] = mapped_column(String(5), unique=True)
 
     def __init__(self, name, short_name):
         self.name = name
@@ -33,13 +33,16 @@ class Generation(Base):
 
     def __repr__(self):
         return self.short_name
-
-def getGenerationTable():
+    
+def getGenerationsTable():
     id = 0
     for x in list(PmGen):
         id += 1
         name = f"generation{id}"
-        Generation(name, x)
+        generation = session.query(Generation).filter_by(id=id).first()
+        if generation is None:
+            session.add(Generation(name=name, short_name=x.value))
+    session.commit()
 
 def isSupported(gen: PmGen):
         if gen in list(SupportedGen):

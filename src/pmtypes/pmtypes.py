@@ -1,6 +1,6 @@
-from pmgens.pmgen import PmGen
-from pmalchemy.alchemy import Base
-from sqlalchemy import Integer, String, ForeignKey
+from pmgens.pmgen import PmGen, Generation
+from pmalchemy.alchemy import Base, session
+from sqlalchemy import Integer, String, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class PmType(Base):
@@ -8,9 +8,12 @@ class PmType(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(10))
+    generation_id: Mapped[int] = mapped_column(Integer, ForeignKey('generation.id'))
+    generation: Mapped[Generation] = relationship('Generation', backref='types')
     
-    def __init__(self, name: str , **kwargs: dict):
+    def __init__(self, name: str, gen: Generation):
         self.name = name
+        self.generation = gen
 
     def __str__(self):
         return f"{self.name}"
@@ -22,7 +25,12 @@ class PmTypeRelations(Base):
     __tablename__ = 'typerelations'
     attack_type: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), primary_key=True)
     defending_type: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), primary_key=True)
-    relationship: Mapped[int] = mapped_column(Integer)
+    effectiveness: Mapped[float] = mapped_column(Float)
+
+    def __init__(self, attack_type: int, defending_type: int, effectiveness: float = 1.0):
+        self.attack_type = attack_type
+        self.defending_type = defending_type
+        self.effectiveness = effectiveness
 
 #Default is intended generation 1
 defaultTypes = {
@@ -47,7 +55,7 @@ defaultTypes = {
         "weak_to": ["flying", "psychic"], "resists": ["bug", "rock"], "immune_to": [None]
     },
     "poison": {
-        "weak_to": ["ground", "psychic"], "resists": ["grass", "fighting", "poison", "bug"], "immune_to": [None]
+        "weak_to": ["ground", "psychic", "bug"], "resists": ["grass", "fighting", "poison"], "immune_to": [None]
     },
     "ground": {
         "weak_to": ["water", "grass", "ice"], "resists": ["poison", "rock"], "immune_to": ["electric"]
@@ -56,7 +64,7 @@ defaultTypes = {
         "weak_to": ["electric", "ice", "rock"], "resists": ["grass", "fighting", "bug"], "immune_to": ["ground"]
     },
     "psychic": {
-        "weak_to": ["bug", "ghost"], "resists": ["fighting", "psychic"], "immune_to": [None]
+        "weak_to": ["bug"], "resists": ["fighting", "psychic"], "immune_to": ["ghost"] 
     },
     "bug": {
         "weak_to": ["fire", "flying", "rock"], "resists": ["grass", "fighting", "ground"], "immune_to": [None]
@@ -70,18 +78,6 @@ defaultTypes = {
     "dragon": {
         "weak_to": ["ice", "dragon"], "resists": ["fire", "water", "electric", "grass"], "immune_to": [None]
     }
-}
-
-gen1Quirks = {
-    "poison": {
-        "weak_to": ["ground", "psychic", "bug"], "resists": ["grass", "fighting", "poison"], "immune_to": [None]
-    },
-    "psychic": {
-        "weak_to": ["bug"], "resists": ["fighting", "psychic"], "immune_to": ["ghost"] 
-    },
-    "bug": {
-        "weak_to": ["fire", "flying", "poison", "rock"], "resists": ["grass", "fighting", "ground"], "immune_to": [None]
-    },
 }
 
 gen2To5Changes = {
@@ -100,8 +96,14 @@ gen2To5Changes = {
     "fighting": {
         "weak_to": ["flying", "psychic"], "resists": ["bug", "rock", "dark"], "immune_to": [None]
     },
+    "poison": {
+        "weak_to": ["ground", "psychic"], "resists": ["grass", "fighting", "poison", "bug"], "immune_to": [None]
+    },
     "psychic": {
         "weak_to": ["bug", "ghost", "dark"], "resists": ["fighting", "psychic"], "immune_to": [None]
+    },
+    "bug": {
+        "weak_to": ["fire", "flying", "rock"], "resists": ["grass", "fighting", "ground"], "immune_to": [None]
     },
     "rock": {
         "weak_to": ["water", "grass", "fighting", "ground", "steel"], "resists": ["normal", "fire", "poison", "flying"], "immune_to": [None]
@@ -141,26 +143,44 @@ gen6ToCurrentChanges = {
     }
 }
 
-alltypes = [PmType("normal"), PmType("fire"), PmType("fire")]
+def getGenerationsForTypes():
+    def q(x):
+        return session.get(Generation, x)
+    gen1 = q(1)
+    gen2 = q(2)
+    gen6 = q(6)
+    return [gen1, gen2, gen6]
 
-def createPmTypes(gen: PmGen, intended: bool = False):
+def addTypeToTable(name, gen):
+        type = session.query(PmType).filter_by(
+            name=name, generation=gen).first()
+        if type is None:
+            type = PmType(name=name, gen=gen)
+            session.add(type)
+
+
+def getTypesTable():
+    [gen1, gen2, gen6] = getGenerationsForTypes()
+
+    for name in defaultTypes:
+        addTypeToTable(name, gen1)
+    for name in gen2To5Changes:
+        addTypeToTable(name, gen2)
+    for name in gen6ToCurrentChanges:
+        addTypeToTable(name, gen6)
+    session.commit()
+
+def getPmTypes(gen: PmGen):
     properties = defaultTypes.copy()
 
     if gen != PmGen.GEN1:
         properties.update(gen2To5Changes)
         if gen not in [PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
             properties.update(gen6ToCurrentChanges)
-    elif intended == False:
-        properties.update(gen1Quirks)
     
     types = []
 
     for name in properties:
-        types.append(PmType(name))
-        """ typeProperties = properties[name]
-        typeProperties["name"] = name
-        types.append(PmType(**typeProperties)) """
+        types.append(name)
 
     return types
-
-gen1Pm

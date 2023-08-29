@@ -7,7 +7,7 @@ from pmgens.pmgen import PmGen
 from pmgens.pmgen import SupportedGen
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
-from pmtypes.pmtypes import createPmTypes
+from pmtypes.pmtypes import getPmTypes
 from pmnatures.natures import getNature
 from pmnatures.natures import getSpecificNatures
 from pmnatures.natures import NatureRelevantStat
@@ -50,10 +50,8 @@ def get_games_from_one_generation(generation: PmGen):
     return getGames(generation)
 
 @app.get("/types/{generation}")
-def get_types(generation: PmGen, asIntended: Union[bool, None] = None):
-    if asIntended != None:
-        return createPmTypes(generation, asIntended)
-    return createPmTypes(generation)
+def get_types(generation: PmGen):
+    return getPmTypes(generation)
 
 @app.get("/nature")
 def get_nature():

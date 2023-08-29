@@ -1,13 +1,19 @@
 #Dependencies
 import uvicorn
-from pmalchemy.alchemy import reflect_database, make_database, show_all_tables
-
+from pmalchemy.alchemy import clean_database, make_database, show_all_tables
+from pmgens.pmgen import getGenerationsTable
+from pmtypes.pmtypes import getTypesTable
 if __name__ == "__main__":
 
     #Set up SQL Database
     #show_all_tables()
-    #reflect_database()
+    clean_database()
     make_database()
+
+    #Fill Database
+    getGenerationsTable()
+    getTypesTable()
+    
 
     #Set up API
     uvicorn.run("api:app", host="127.0.0.1", reload=True)
