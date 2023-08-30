@@ -2,15 +2,15 @@ from pmgens.pmgen import PmGen
 from typing import Union
 
 class BaseStat:
-    def __init__(self, name, abbreviation):
+    def __init__(self, name, short_name):
         self.name = name
-        self.abrv = abbreviation
+        self.short_name = short_name
 
     def __str__(self):
         return f"{self.name}"
     
     def __repr__(self):
-        return f"{self.abrv}"
+        return f"{self.short_name}"
     
 HP = BaseStat("Hit Points", "HP")
 Atk = BaseStat("Attack", "Atk")

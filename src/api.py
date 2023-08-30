@@ -7,10 +7,8 @@ from pmgens.pmgen import PmGen
 from pmgens.pmgen import SupportedGen, getGenerations
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
-from pmtypes.pmtypes import getPmTypes
-from pmnatures.natures import getNature
-from pmnatures.natures import getSpecificNatures
-from pmnatures.natures import NatureRelevantStat
+from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration
+from pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
 
 app = FastAPI()
 
@@ -51,10 +49,14 @@ def get_games_from_one_generation(generation: PmGen):
 
 @app.get("/types/{generation}")
 def get_types(generation: PmGen):
-    return getPmTypes(generation)
+    return getPmTypesByGeneration(generation)
+
+@app.get("/type/{id}")
+def get_type_by_id(id: int):
+    return getPmTypeById(id)
 
 @app.get("/nature")
-def get_nature():
+def get_a_random_nature():
     return getNature()
 
 @app.get("/natures/{effect}/{stat}")

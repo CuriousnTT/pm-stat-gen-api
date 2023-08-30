@@ -14,7 +14,6 @@ if __name__ == "__main__":
     #Fill Database
     getGenerationsTable()
     getTypesTable()
-    
 
     #Set up API
     uvicorn.run("api:app", host="127.0.0.1", reload=True)

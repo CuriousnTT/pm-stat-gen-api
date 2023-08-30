@@ -2,7 +2,7 @@ from typing import Union
 from sqlalchemy import Integer, String, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pmgens.pmgen import PmGen, Generation
-from pmalchemy.alchemy import Base, session
+from pmalchemy.alchemy import Base, session, commit_and_close
 
 class PmType(Base):
     __tablename__ = 'types'
@@ -159,7 +159,6 @@ def addTypeToTable(name, gen:Generation):
         if type is None:
             type = PmType(name=name, generation=gen)
             session.add(type)
-        print(type.generation_id, type.name)
 
 
 def getTypesTable():
@@ -172,7 +171,7 @@ def getTypesTable():
     for name in gen6ToCurrentChanges:
         addTypeToTable(name, gen6)
 
-    session.commit()
+    commit_and_close()
 
 def getPmTypes(gen: PmGen):
     properties = defaultTypes.copy()
@@ -188,3 +187,55 @@ def getPmTypes(gen: PmGen):
         types.append(name)
 
     return types
+
+def getPmTypeById(id: int):
+    pmtype = session.get(PmType, id)
+    if pmtype is not None:
+        info = {"type_name": pmtype.name,
+                "type_id": pmtype.id,
+                "last_changed": pmtype.generation.name,
+                "generation_id": pmtype.generation_id}
+        return info
+    
+def getPmTypesById(value: int):
+    x = 0
+    while x < value:
+        x += 1
+        getPmTypeById(x)
+
+def getPmTypesByGeneration(gen: PmGen):
+    generationTypes = {}
+    if gen not in [PmGen.GEN1, PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
+        result = session.query(PmType).filter_by(generation_id = 6).all()
+        for x in result:
+            typedata = {
+                "id": x.id,
+                "name": x.name,
+                "origin_generation": x.generation_id,
+            }
+            generationTypes[typedata["name"]] = typedata
+            
+    if gen is not PmGen.GEN1:
+        result = session.query(PmType).filter_by(generation_id = 2).all()
+        for x in result:
+            typedata = {
+                "id": x.id,
+                "name": x.name,
+                "origin_generation": x.generation_id,
+            }
+            if typedata["name"] not in generationTypes:
+                generationTypes[typedata["name"]] = typedata
+    
+    result = session.query(PmType).filter_by(generation_id = 1).all()
+    for x in result:
+        typedata = {
+            "id": x.id,
+            "name": x.name,
+            "origin_generation": x.generation_id,
+        }   
+        if typedata["name"] not in generationTypes:
+                generationTypes[typedata["name"]] = typedata  
+
+    return {"info": f"These are the types as they exist in {gen.value}. Their ids are essential for type relationships",
+            "types": generationTypes,
+            "generation": gen.value}

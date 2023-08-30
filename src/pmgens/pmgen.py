@@ -1,5 +1,5 @@
 from enum import Enum
-from pmalchemy.alchemy import Base, session
+from pmalchemy.alchemy import Base, session, commit_and_close
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -48,7 +48,7 @@ def getGenerationsTable():
         generation = session.query(Generation).filter_by(id=id).first()
         if generation is None:
             session.add(Generation(name=name, short_name=x.value))
-    session.commit()
+    commit_and_close()
 
 def getGenerations():
     id = 1

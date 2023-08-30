@@ -8,11 +8,11 @@ import random
 from pmstats.basestats import Atk, Def, SpA, SpD, Spe
 
 class NatureRelevantStat(enum.Enum):
-    Atk = Atk.abrv
-    Def = Def.abrv
-    SpA = SpA.abrv
-    SpD = SpD.abrv
-    Spe = Spe.abrv
+    Atk = Atk.short_name
+    Def = Def.short_name
+    SpA = SpA.short_name
+    SpD = SpD.short_name
+    Spe = Spe.short_name
 
 class PmNature(Base):
     __tablename__ = "pm_nature"

@@ -6,11 +6,15 @@ class Base(DeclarativeBase):
 
 DATABASE_PATH = "pmdb/pmdb.sqlite3"
 
-engine = sqlalchemy.create_engine(f"sqlite+pysqlite:///{DATABASE_PATH}", echo=True)
+engine = sqlalchemy.create_engine(f"sqlite+pysqlite:///{DATABASE_PATH}")
 metadata_obj = Base.metadata
 
 Session = sessionmaker(bind=engine)
 session = Session()
+
+def commit_and_close():
+    session.commit()
+    session.close()
 
 def show_all_tables():
     metadata_obj.reflect(bind=engine)
