@@ -45,9 +45,14 @@ def getGenerationsTable():
     for x in list(PmGen):
         id += 1
         name = f"generation {id}"
-        generation = session.query(Generation).filter_by(id=id).first()
-        if generation is None:
-            session.add(Generation(name=name, short_name=x.value))
+        try:
+            generation = session.query(Generation).filter_by(id=id).first()
+            if generation is None:
+                session.add(Generation(name=name, short_name=x.value))
+        except Exception as e:
+            print(f"Error adding generation to table: {e}")
+            session.rollback()
+    
     commit_and_close()
 
 def getGenerations():

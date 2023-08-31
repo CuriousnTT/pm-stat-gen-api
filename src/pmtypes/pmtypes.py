@@ -4,6 +4,186 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pmgens.pmgen import PmGen, Generation
 from pmalchemy.alchemy import Base, session, commit_and_close
 
+#Default is generation 1
+defaultTypes = {
+    "normal": {
+        "weak_to": ["fighting"], 
+        "resists": [None], 
+        "immune_to": ["ghost"]
+    },
+    "fire": {
+        "weak_to": ["water", "ground", "rock"], 
+        "resists": ["fire", "grass", "bug"], 
+        "immune_to": [None]
+    },
+    "water": {
+        "weak_to": ["electric", "grass"], 
+        "resists": ["fire", "water", "ice"], 
+        "immune_to": [None]
+    },
+    "electric": {
+        "weak_to": ["ground"], 
+        "resists": ["electric", "flying"], 
+        "immune_to": [None]
+    },
+    "grass": {
+        "weak_to": ["fire", "ice", "poison", "flying", "bug"], 
+        "resists": ["water", "electric", "grass", "ground"], 
+        "immune_to": [None]
+    },
+    "ice": {
+        "weak_to": ["fire", "fighting", "rock"], 
+        "resists": ["ice"], 
+        "immune_to": [None]
+    },
+    "fighting": {
+        "weak_to": ["flying", "psychic"], 
+        "resists": ["bug", "rock"], 
+        "immune_to": [None]
+    },
+    "poison": {
+        "weak_to": ["ground", "psychic", "bug"], 
+        "resists": ["grass", "fighting", "poison"], 
+        "immune_to": [None]
+    },
+    "ground": {
+        "weak_to": ["water", "grass", "ice"], 
+        "resists": ["poison", "rock"], 
+        "immune_to": ["electric"]
+    },
+    "flying": {
+        "weak_to": ["electric", "ice", "rock"], 
+        "resists": ["grass", "fighting", "bug"], 
+        "immune_to": ["ground"]
+    },
+    "psychic": {
+        "weak_to": ["bug"], 
+        "resists": ["fighting", "psychic"], 
+        "immune_to": ["ghost"] 
+    },
+    "bug": {
+        "weak_to": ["fire", "flying", "rock"], 
+        "resists": ["grass", "fighting", "ground"], 
+        "immune_to": [None]
+    },
+    "rock": {
+        "weak_to": ["water", "grass", "fighting", "ground"], 
+        "resists": ["normal", "fire", "poison", "flying"], 
+        "immune_to": [None]
+    },
+    "ghost": {
+        "weak_to": ["ghost"], 
+        "resists": ["poison", "bug"], 
+        "immune_to": ["normal", "fighting"]
+    },
+    "dragon": {
+        "weak_to": ["ice", "dragon"], 
+        "resists": ["fire", "water", "electric", "grass"], 
+        "immune_to": [None]
+    }
+}
+
+gen2To5Changes = {
+    "fire": {
+        "weak_to": ["water", "ground", "rock"], 
+        "resists": ["fire", "grass", "bug", "steel"], 
+        "immune_to": [None]
+    },
+    "water": {
+        "weak_to": ["electric", "grass"], 
+        "resists": ["fire", "water", "ice", "steel"], 
+        "immune_to": [None]
+    },
+    "electric": {
+        "weak_to": ["ground"], 
+        "resists": ["electric", "flying", "steel"], 
+        "immune_to": [None]
+    },
+    "ice": {
+        "weak_to": ["fire", "fighting", "rock", "steel"], 
+        "resists": ["ice"], 
+        "immune_to": [None]
+    },
+    "fighting": {
+        "weak_to": ["flying", "psychic"], 
+        "resists": ["bug", "rock", "dark"], 
+        "immune_to": [None]
+    },
+    "poison": {
+        "weak_to": ["ground", "psychic"], 
+        "resists": ["grass", "fighting", "poison", "bug"], 
+        "immune_to": [None]
+    },
+    "psychic": {
+        "weak_to": ["bug", "ghost", "dark"], 
+        "resists": ["fighting", "psychic"], 
+        "immune_to": [None]
+    },
+    "bug": {
+        "weak_to": ["fire", "flying", "rock"], 
+        "resists": ["grass", "fighting", "ground"], 
+        "immune_to": [None]
+    },
+    "rock": {
+        "weak_to": ["water", "grass", "fighting", "ground", "steel"], 
+        "resists": ["normal", "fire", "poison", "flying"], 
+        "immune_to": [None]
+    },
+    "ghost": {
+        "weak_to": ["ghost", "dark"], 
+        "resists": ["poison", "bug"], 
+        "immune_to": ["normal", "fighting"]
+    },
+    "dark": {
+        "weak_to": ["fighting", "bug"],
+        "resists": ["ghost", "dark"], 
+        "immune_to": ["psychic"]
+    },
+    "steel": {
+        "weak_to": ["fire", "fighting", "ground"], 
+        "resists": ["normal", "grass", "ice", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel"], 
+        "immune_to": ["poison"]
+    },
+}
+
+gen6ToCurrentChanges = {
+    "fire": {
+        "weak_to": ["water", "ground", "rock"], 
+        "resists": ["fire", "grass", "bug", "steel", "fairy"], 
+        "immune_to": [None]
+    },
+    "fighting": {
+        "weak_to": ["flying", "psychic", "fairy"], 
+        "resists": ["bug", "rock", "dark"], 
+        "immune_to": [None]
+    },
+    "poison": {
+        "weak_to": ["ground", "psychic"], 
+        "resists": ["grass", "fighting", "poison", "bug", "fairy"], 
+        "immune_to": [None]
+    },
+    "dragon": {
+        "weak_to": ["ice", "dragon", "fairy"], 
+        "resists": ["fire", "water", "electric", "grass"], 
+        "immune_to": [None]
+    },
+    "dark": {
+        "weak_to": ["fighting", "bug", "fairy"], 
+        "resists": ["ghost", "dark"], 
+        "immune_to": ["psychic"]
+    },
+    "steel": {
+        "weak_to": ["fire", "fighting", "ground"], 
+        "resists": ["normal", "grass", "ice", "flying", "psychic", "bug", "rock", "dragon", "steel", "fairy"], 
+        "immune_to": ["poison"]
+    },
+    "fairy": {
+        "weak_to": ["poison", "steel"], 
+        "resists": ["fighting", "bug", "dark"], 
+        "immune_to": ["dragon"]
+    }
+}
+
 class PmType(Base):
     __tablename__ = 'types'
 
@@ -34,116 +214,6 @@ class PmTypeRelations(Base):
         self.defending_type = defending_type
         self.effectiveness = effectiveness
 
-#Default is generation 1
-defaultTypes = {
-    "normal": {
-        "weak_to": ["fighting"], "resists": [None], "immune_to": ["ghost"]
-    },
-    "fire": {"weak_to": ["water", "ground", "rock"], "resists": ["fire", "grass", "bug"], "immune_to": [None]
-    },
-    "water": {
-        "weakTo": ["electric", "grass"], "resists": ["fire", "water", "ice"], "immune_to": [None]
-    },
-    "electric": {
-        "weak_to": ["ground"], "resists": ["electric", "flying"], "immune_to": [None]
-    },
-    "grass": {
-        "weak_to": ["fire", "ice", "poison", "flying", "bug"], "resists": ["water", "electric", "grass", "ground"], "immune_to": [None]
-    },
-    "ice": {
-        "weak_to": ["fire", "fighting", "rock"], "resists": ["ice"], "immune_to": [None]
-    },
-    "fighting": {
-        "weak_to": ["flying", "psychic"], "resists": ["bug", "rock"], "immune_to": [None]
-    },
-    "poison": {
-        "weak_to": ["ground", "psychic", "bug"], "resists": ["grass", "fighting", "poison"], "immune_to": [None]
-    },
-    "ground": {
-        "weak_to": ["water", "grass", "ice"], "resists": ["poison", "rock"], "immune_to": ["electric"]
-    },
-    "flying": {
-        "weak_to": ["electric", "ice", "rock"], "resists": ["grass", "fighting", "bug"], "immune_to": ["ground"]
-    },
-    "psychic": {
-        "weak_to": ["bug"], "resists": ["fighting", "psychic"], "immune_to": ["ghost"] 
-    },
-    "bug": {
-        "weak_to": ["fire", "flying", "rock"], "resists": ["grass", "fighting", "ground"], "immune_to": [None]
-    },
-    "rock": {
-        "weak_to": ["water", "grass", "fighting", "ground"], "resists": ["normal", "fire", "poison", "flying"], "immune_to": [None]
-    },
-    "ghost": {
-        "weak_to": ["ghost"], "resists": ["poison", "bug"], "immune_to": ["normal", "fighting"]
-    },
-    "dragon": {
-        "weak_to": ["ice", "dragon"], "resists": ["fire", "water", "electric", "grass"], "immune_to": [None]
-    }
-}
-
-gen2To5Changes = {
-    "fire": {
-        "weak_to": ["water", "ground", "rock"], "resists": ["fire", "grass", "bug", "steel"], "immune_to": [None]
-    },
-    "water": {
-        "weak_to": ["electric", "grass"], "resists": ["fire", "water", "ice", "steel"], "immune_to": [None]
-    },
-    "electric": {
-        "weak_to": ["ground"], "resists": ["electric", "flying", "steel"], "immune_to": [None]
-    },
-    "ice": {
-        "weak_to": ["fire", "fighting", "rock", "steel"], "resists": ["ice"], "immune_to": [None]
-    },
-    "fighting": {
-        "weak_to": ["flying", "psychic"], "resists": ["bug", "rock", "dark"], "immune_to": [None]
-    },
-    "poison": {
-        "weak_to": ["ground", "psychic"], "resists": ["grass", "fighting", "poison", "bug"], "immune_to": [None]
-    },
-    "psychic": {
-        "weak_to": ["bug", "ghost", "dark"], "resists": ["fighting", "psychic"], "immune_to": [None]
-    },
-    "bug": {
-        "weak_to": ["fire", "flying", "rock"], "resists": ["grass", "fighting", "ground"], "immune_to": [None]
-    },
-    "rock": {
-        "weak_to": ["water", "grass", "fighting", "ground", "steel"], "resists": ["normal", "fire", "poison", "flying"], "immune_to": [None]
-    },
-    "ghost": {
-        "weak_to": ["ghost", "dark"], "resists": ["poison", "bug"], "immune_to": ["normal", "fighting"]
-    },
-    "dark": {
-        "weak_to": ["fighting", "bug"], "resists": ["ghost", "dark"], "immune_to": ["psychic"]
-    },
-    "steel": {
-        "weak_to": ["fire", "fighting", "ground"], "resists": ["normal", "grass", "ice", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel"], "immune_to": ["poison"]
-    },
-}
-
-gen6ToCurrentChanges = {
-    "fire": {
-        "weak_to": ["water", "ground", "rock"], "resists": ["fire", "grass", "bug", "steel", "fairy"], "immune_to": [None]
-    },
-    "fighting": {
-        "weak_to": ["flying", "psychic", "fairy"], "resists": ["bug", "rock", "dark"], "immune_to": [None]
-    },
-    "poison": {
-        "weak_to": ["ground", "psychic"], "resists": ["grass", "fighting", "poison", "bug", "fairy"], "immune_to": [None]
-    },
-    "dragon": {
-        "weak_to": ["ice", "dragon", "fairy"], "resists": ["fire", "water", "electric", "grass"], "immune_to": [None]
-    },
-    "dark": {
-        "weak_to": ["fighting", "bug", "fairy"], "resists": ["ghost", "dark"], "immune_to": ["psychic"]
-    },
-    "steel": {
-        "weak_to": ["fire", "fighting", "ground"], "resists": ["normal", "grass", "ice", "flying", "psychic", "bug", "rock", "dragon", "steel", "fairy"], "immune_to": ["poison"]
-    },
-    "fairy": {
-        "weak_to": ["poison", "steel"], "resists": ["fighting", "bug", "dark"], "immune_to": ["dragon"]
-    }
-}
 
 def getGenerationsForTypes():
     def q(x):
@@ -154,11 +224,25 @@ def getGenerationsForTypes():
     return [gen1, gen2, gen6]
 
 def addTypeToTable(name, gen:Generation):
+    try:
         type = session.query(PmType).filter_by(
             name=name, generation=gen).first()
         if type is None:
             type = PmType(name=name, generation=gen)
             session.add(type)
+    except Exception as e:
+        print(f"Error adding type to table: {e}")
+        session.rollback()
+
+def addRelationToTable(attack_type: int, defending_type: int, effectiveness: float):
+    try:
+        relation = session.query(PmTypeRelations).filter_by(attack_type=attack_type, defending_type=defending_type).first()
+        if relation is None:
+            relation = PmTypeRelations(attack_type, defending_type, effectiveness)
+            session.add(relation)
+    except Exception as e:
+        print(f"Error adding relation to table: {e}")
+        session.rollback()
 
 
 def getTypesTable():
@@ -172,6 +256,38 @@ def getTypesTable():
         addTypeToTable(name, gen6)
 
     commit_and_close()
+
+def getTypeRelationshipTable():
+    types = session.query(PmType).all()
+    for attack_type in types:
+        attack_type_id = attack_type.id
+        attack_type_name = attack_type.name
+        for defending_type in types:
+            defending_type_id = defending_type.id
+            defending_type_name = defending_type.name
+            defending_type_gen_id = defending_type.generation_id
+            
+            defending_type_dict = None
+            if defending_type_gen_id == 1:
+                defending_type_dict = defaultTypes[defending_type_name]
+            elif defending_type_gen_id == 2:
+                defending_type_dict = gen2To5Changes[defending_type_name]
+            elif defending_type_gen_id == 6:
+                defending_type_dict = gen6ToCurrentChanges[defending_type_name]
+            effectiveness_value = 1.0
+            if attack_type_name in defending_type_dict["weak_to"]:
+                effectiveness_value = 2.0
+            elif attack_type_name in defending_type_dict["resists"]:
+                effectiveness_value = 0.5
+            elif attack_type_name in defending_type_dict["immune_to"]:
+                effectiveness_value = 0
+            
+            addRelationToTable(attack_type_id, defending_type_id, effectiveness_value)
+    
+    commit_and_close()
+
+        
+
 
 def getPmTypes(gen: PmGen):
     properties = defaultTypes.copy()
@@ -197,45 +313,56 @@ def getPmTypeById(id: int):
                 "generation_id": pmtype.generation_id}
         return info
     
-def getPmTypesById(value: int):
-    x = 0
-    while x < value:
-        x += 1
-        getPmTypeById(x)
+def getPmTypesById(ids: list[int]):
+    typelist = {}
+    for x in ids:
+        pmtype = getPmTypeById(x)
+        typedata = {
+            "id": pmtype["type_id"],
+            "name": pmtype["type_name"],
+            "origin_generation": pmtype["generation_id"],
+        }
+        typelist[typedata["id"]] = typedata
+    print(typelist)
 
 def getPmTypesByGeneration(gen: PmGen):
     generationTypes = {}
+    allIds = []
     if gen not in [PmGen.GEN1, PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
         result = session.query(PmType).filter_by(generation_id = 6).all()
-        for x in result:
+        for type in result:
             typedata = {
-                "id": x.id,
-                "name": x.name,
-                "origin_generation": x.generation_id,
+                "id": type.id,
+                "name": type.name,
+                "origin_generation": type.generation_id,
             }
             generationTypes[typedata["name"]] = typedata
+            allIds.append(type.id)
             
     if gen is not PmGen.GEN1:
         result = session.query(PmType).filter_by(generation_id = 2).all()
-        for x in result:
+        for type in result:
             typedata = {
-                "id": x.id,
-                "name": x.name,
-                "origin_generation": x.generation_id,
+                "id": type.id,
+                "name": type.name,
+                "origin_generation": type.generation_id,
             }
             if typedata["name"] not in generationTypes:
                 generationTypes[typedata["name"]] = typedata
+                allIds.append(type.id)
     
     result = session.query(PmType).filter_by(generation_id = 1).all()
-    for x in result:
+    for type in result:
         typedata = {
-            "id": x.id,
-            "name": x.name,
-            "origin_generation": x.generation_id,
+            "id": type.id,
+            "name": type.name,
+            "origin_generation": type.generation_id,
         }   
         if typedata["name"] not in generationTypes:
-                generationTypes[typedata["name"]] = typedata  
+                generationTypes[typedata["name"]] = typedata
+                allIds.append(type.id)  
 
     return {"info": f"These are the types as they exist in {gen.value}. Their ids are essential for type relationships",
             "types": generationTypes,
-            "generation": gen.value}
+            "generation": gen.value,
+            "all_ids": allIds}

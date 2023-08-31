@@ -13,8 +13,13 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 def commit_and_close():
-    session.commit()
-    session.close()
+    try:
+        session.commit()
+    except Exception as e:
+        print(f"Error committing changes to database: {e}")
+        session.rollback()
+    finally:
+        session.close()
 
 def show_all_tables():
     metadata_obj.reflect(bind=engine)
