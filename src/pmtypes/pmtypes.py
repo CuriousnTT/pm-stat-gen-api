@@ -423,8 +423,6 @@ def getOffensiveTypeRelations(gen: PmGen, attack_type: int):
         generation = getGenByShortName(gen)
         relations = session.query(PmTypeRelations).filter_by(attack_type=attack_type).all()
         relations = [relation for relation in relations if relation.generation_id <= generation.id]
-        return relations
-    
         result = {}
         for relation in relations:
             if relation.defending_type not in result or relation.generation_id > result[relation.defending_type].generation_id:
