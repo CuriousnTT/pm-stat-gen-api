@@ -67,3 +67,11 @@ def getGenerations():
         generations.append(generation)
         id += 1
     return generations
+
+def getGenByShortName(gen: PmGen):
+    try:
+        generation = session.query(Generation).filter_by(short_name=gen.value).first()
+        return generation
+    except Exception as e:
+        print(f"Error contacting generation table: {e}")
+        session.rollback()

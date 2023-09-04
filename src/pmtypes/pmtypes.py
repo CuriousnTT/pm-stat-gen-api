@@ -1,7 +1,8 @@
+from itertools import groupby
 from typing import Union
-from sqlalchemy import Integer, String, Float, ForeignKey
+from sqlalchemy import Integer, String, Float, ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmgens.pmgen import PmGen, Generation
+from pmgens.pmgen import PmGen, Generation, getGenByShortName
 from pmalchemy.alchemy import Base, session, commit_and_close
 
 #Default is generation 1
@@ -184,6 +185,10 @@ gen6ToCurrentChanges = {
     }
 }
 
+gen1Keys = [key for key in defaultTypes]
+gen2Keys = ["dark", "steel"]
+gen6Keys = ["fairy"]
+
 class PmType(Base):
     __tablename__ = 'types'
 
@@ -205,14 +210,19 @@ class PmType(Base):
     
 class PmTypeRelations(Base):
     __tablename__ = 'type_relations'
+
+    generation_id: Mapped[int] = mapped_column(Integer, ForeignKey('generation.id'), primary_key=True)
     attack_type: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), primary_key=True)
     defending_type: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), primary_key=True)
     effectiveness: Mapped[float] = mapped_column(Float)
+    generation: Mapped[Generation] = relationship('Generation', backref='type_relations')
 
-    def __init__(self, attack_type: int, defending_type: int, effectiveness: Union[float, None] = 1.0):
+    def __init__(self, attack_type: int, defending_type: int, generation: Generation, effectiveness: float = 1.0,):
         self.attack_type = attack_type
         self.defending_type = defending_type
         self.effectiveness = effectiveness
+        self.generation = generation
+        self.generation_id = generation.id
 
 
 def getGenerationsForTypes():
@@ -234,11 +244,11 @@ def addTypeToTable(name, gen:Generation):
         print(f"Error adding type to table: {e}")
         session.rollback()
 
-def addRelationToTable(attack_type: int, defending_type: int, effectiveness: float):
+def addRelationToTable(attack_type: int, defending_type: int, generation: Generation, effectiveness: float):
     try:
-        relation = session.query(PmTypeRelations).filter_by(attack_type=attack_type, defending_type=defending_type).first()
+        relation = session.query(PmTypeRelations).filter_by(generation=generation, attack_type=attack_type, defending_type=defending_type).first()
         if relation is None:
-            relation = PmTypeRelations(attack_type, defending_type, effectiveness)
+            relation = PmTypeRelations(attack_type, defending_type, generation, effectiveness)
             session.add(relation)
     except Exception as e:
         print(f"Error adding relation to table: {e}")
@@ -248,68 +258,75 @@ def addRelationToTable(attack_type: int, defending_type: int, effectiveness: flo
 def getTypesTable():
     [gen1, gen2, gen6] = getGenerationsForTypes()
 
-    for name in defaultTypes:
+    for name in gen1Keys:
         addTypeToTable(name, gen1)
-    for name in gen2To5Changes:
+    for name in gen2Keys:
         addTypeToTable(name, gen2)
-    for name in gen6ToCurrentChanges:
+    for name in gen6Keys:
         addTypeToTable(name, gen6)
 
     commit_and_close()
 
+def getDefendingTypeDict(gen_id: int, defending_type_name: str):
+    if gen_id == 1:
+        defending_type_dict = defaultTypes[defending_type_name]
+    elif gen_id == 2:
+        defending_type_dict = gen2To5Changes.get(
+            defending_type_name, defaultTypes.get(
+                defending_type_name, {}))
+    elif gen_id == 6:
+        defending_type_dict = gen6ToCurrentChanges.get(
+            defending_type_name, gen2To5Changes.get(
+                defending_type_name, defaultTypes.get(defending_type_name, {})))
+    return defending_type_dict
+
 def getTypeRelationshipTable():
-    types = session.query(PmType).all()
-    for attack_type in types:
-        attack_type_id = attack_type.id
-        attack_type_name = attack_type.name
-        for defending_type in types:
-            defending_type_id = defending_type.id
-            defending_type_name = defending_type.name
-            defending_type_gen_id = defending_type.generation_id
+    [gen1, gen2, gen6] = getGenerationsForTypes()
+    generation_ids = [1]
+
+    for gen in [gen1, gen2, gen6]:
+        types = session.query(PmType).filter(PmType.generation_id.in_(generation_ids)).all()
+        gen_id = gen.id
+
+        for attack_type in types:
+            attack_type_id = attack_type.id
+            attack_type_name = attack_type.name
+
+            for defending_type in types:
+                defending_type_id = defending_type.id
+                defending_type_name = defending_type.name
+                defending_type_dict = getDefendingTypeDict(gen_id, defending_type_name)
             
-            defending_type_dict = None
-            if defending_type_gen_id == 1:
-                defending_type_dict = defaultTypes[defending_type_name]
-            elif defending_type_gen_id == 2:
-                defending_type_dict = gen2To5Changes[defending_type_name]
-            elif defending_type_gen_id == 6:
-                defending_type_dict = gen6ToCurrentChanges[defending_type_name]
-            effectiveness_value = 1.0
-            if attack_type_name in defending_type_dict["weak_to"]:
-                effectiveness_value = 2.0
-            elif attack_type_name in defending_type_dict["resists"]:
-                effectiveness_value = 0.5
-            elif attack_type_name in defending_type_dict["immune_to"]:
-                effectiveness_value = 0
+                effectiveness_value = 1.0
+                if attack_type_name in defending_type_dict["weak_to"]:
+                    effectiveness_value = 2.0
+                elif attack_type_name in defending_type_dict["resists"]:
+                    effectiveness_value = 0.5
+                elif attack_type_name in defending_type_dict["immune_to"]:
+                    effectiveness_value = 0
             
-            addRelationToTable(attack_type_id, defending_type_id, effectiveness_value)
+                addRelationToTable(attack_type_id, defending_type_id, gen, effectiveness_value)
+                
+        if 2 not in generation_ids:
+            generation_ids.append(2)
+        else:
+            generation_ids.append(6)
     
     commit_and_close()
 
-        
-
-
-def getPmTypes(gen: PmGen):
-    properties = defaultTypes.copy()
-
-    if gen != PmGen.GEN1:
-        properties.update(gen2To5Changes)
+def getTypeRelevantPmGen(gen: PmGen):
+    value: PmGen = gen
+    if gen is not PmGen.GEN1:
+        value = PmGen.GEN2
         if gen not in [PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
-            properties.update(gen6ToCurrentChanges)
-    
-    types = []
-
-    for name in properties:
-        types.append(name)
-
-    return types
+            value = PmGen.GEN6
+    return value
 
 def getPmTypeById(id: int):
     pmtype = session.get(PmType, id)
     if pmtype is not None:
         info = {"type_name": pmtype.name,
                 "type_id": pmtype.id,
-                "last_changed": pmtype.generation.name,
                 "generation_id": pmtype.generation_id}
         return info
     
@@ -328,17 +345,18 @@ def getPmTypesById(ids: list[int]):
 def getPmTypesByGeneration(gen: PmGen):
     generationTypes = {}
     allIds = []
-    if gen not in [PmGen.GEN1, PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
-        result = session.query(PmType).filter_by(generation_id = 6).all()
-        for type in result:
-            typedata = {
-                "id": type.id,
-                "name": type.name,
-                "origin_generation": type.generation_id,
-            }
-            generationTypes[typedata["name"]] = typedata
-            allIds.append(type.id)
-            
+    result = session.query(PmType).filter_by(generation_id = 1).all()
+
+    for type in result:
+        typedata = {
+            "id": type.id,
+            "name": type.name,
+            "origin_generation": type.generation_id,
+        }   
+        if typedata["name"] not in generationTypes:
+                generationTypes[typedata["name"]] = typedata
+                allIds.append(type.id)  
+
     if gen is not PmGen.GEN1:
         result = session.query(PmType).filter_by(generation_id = 2).all()
         for type in result:
@@ -350,19 +368,69 @@ def getPmTypesByGeneration(gen: PmGen):
             if typedata["name"] not in generationTypes:
                 generationTypes[typedata["name"]] = typedata
                 allIds.append(type.id)
-    
-    result = session.query(PmType).filter_by(generation_id = 1).all()
-    for type in result:
-        typedata = {
-            "id": type.id,
-            "name": type.name,
-            "origin_generation": type.generation_id,
-        }   
-        if typedata["name"] not in generationTypes:
-                generationTypes[typedata["name"]] = typedata
-                allIds.append(type.id)  
+
+    if gen not in [PmGen.GEN1, PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
+        result = session.query(PmType).filter_by(generation_id = 6).all()
+        for type in result:
+            typedata = {
+                "id": type.id,
+                "name": type.name,
+                "origin_generation": type.generation_id,
+            }
+            generationTypes[typedata["name"]] = typedata
+            allIds.append(type.id)
 
     return {"info": f"These are the types as they exist in {gen.value}. Their ids are essential for type relationships",
             "types": generationTypes,
             "generation": gen.value,
             "all_ids": allIds}
+
+def getPmTypeRelationMultiplier(gen: PmGen, attack_type_id: int, defending_type_id: int):
+    try:
+        generation = getGenByShortName(gen)
+        relations = session.query(PmTypeRelations).filter_by(attack_type=attack_type_id, defending_type=defending_type_id).all()
+        relations = [relation for relation in relations if relation.generation_id <= generation.id]
+        return max(relations, key=lambda relation: relation.generation_id)
+    except Exception as e:
+        print(f"Error contacting type_relationship table: {e}")
+        session.rollback()
+    
+def getAllPmTypeRelations():
+    try:
+        relations = session.query(PmTypeRelations).all()
+        return relations
+    except Exception as e:
+        print(f"Error contacting type_relations table: {e}")
+        session.rollback()
+
+def getDefensiveTypeRelations(gen: PmGen, defending_type: int):
+    try:
+        generation = getGenByShortName(gen)
+        relations = session.query(PmTypeRelations).filter_by(defending_type=defending_type).all()
+        relations = [relation for relation in relations if relation.generation_id <= generation.id]
+        result = {}
+        for relation in relations:
+            if relation.attack_type not in result or relation.generation_id > result[relation.attack_type].generation_id:
+                result[relation.attack_type] = relation
+        
+        return list(result.values())
+    except Exception as e:
+        print(f"Error contacting type_relationship table: {e}")
+        session.rollback()
+
+def getOffensiveTypeRelations(gen: PmGen, attack_type: int):
+    try:
+        generation = getGenByShortName(gen)
+        relations = session.query(PmTypeRelations).filter_by(attack_type=attack_type).all()
+        relations = [relation for relation in relations if relation.generation_id <= generation.id]
+        return relations
+    
+        result = {}
+        for relation in relations:
+            if relation.defending_type not in result or relation.generation_id > result[relation.defending_type].generation_id:
+                result[relation.defending_type] = relation
+        
+        return list(result.values())
+    except Exception as e:
+        print(f"Error contacting type_relationship table: {e}")
+        session.rollback()

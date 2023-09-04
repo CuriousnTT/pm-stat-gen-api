@@ -10,11 +10,15 @@ if __name__ == "__main__":
     #show_all_tables()
     clean_database()
     make_database()
+    print("Database successfully set up")
 
     #Fill Database
     getGenerationsTable()
+    print("Generation table ready")
     getTypesTable()
+    print("Type table ready")
     getTypeRelationshipTable()
+    print("Type relationships table ready")
 
     #Set up API
     uvicorn.run("api:app", host="127.0.0.1", reload=True)
