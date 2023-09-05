@@ -29,3 +29,10 @@ def clean_database():
 
 def make_database():
     metadata_obj.create_all(engine)
+
+def get_all_from_table(cls):
+    try:
+        return session.query(cls).all()
+    except Exception as error:
+        print(f"Error contacting {cls.__tablename__} table: {error}")
+        session.rollback()

@@ -7,7 +7,9 @@ from pmgens.pmgen import PmGen
 from pmgens.pmgen import SupportedGen, getGenerations
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
-from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, getPmTypeRelationMultiplier, getAllPmTypeRelations, getDefensiveTypeRelations, getOffensiveTypeRelations
+from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration
+from pmtypes.typecharts import getTypeCharts
+from pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
 from pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
 
 app = FastAPI()
