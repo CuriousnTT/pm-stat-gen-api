@@ -7,8 +7,7 @@ from pmgens.pmgen import PmGen
 from pmgens.pmgen import SupportedGen, getGenerations
 from pmgens.pmgames import getGames
 from pmstats.basestats import getBaseStats
-from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration
-from pmtypes.typecharts import getTypeCharts
+from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, get_all_PmTypes
 from pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
 from pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
 
@@ -19,6 +18,7 @@ def read_root():
     return {"info" : "Welcome to the world of pmStatGen-API! Go to /docs for information about how to use it!"}
 
 @app.get("/items/{item_id}")
+#Example to be removed/replaced when items are implemented
 def get_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
@@ -49,6 +49,10 @@ def get_games():
 def get_games_from_one_generation(generation: PmGen):
     return getGames(generation)
 
+@app.get("/types/all")
+def get_all_types():
+    return get_all_PmTypes()
+
 @app.get("/type/{id}")
 def get_type_by_id(id: int):
     return getPmTypeById(id)
@@ -65,6 +69,7 @@ def get_offensive_type_properties(generation: PmGen, attack_type_id: int):
 def get_types(generation: PmGen):
     return getPmTypesByGeneration(generation)
 
+#Breaks
 @app.get("/types/{generation}/{attack_type_id}/{defending_type_id}")
 def get_type_effectiveness_multiplier(generation: PmGen, attack_type_id: int, defending_type_id: int):
     return getPmTypeRelationMultiplier(generation, attack_type_id, defending_type_id)
@@ -79,7 +84,9 @@ def get_a_random_nature():
 
 @app.get("/natures/{effect}/{stat}")
 def get_natures_with_effect_on_stat(effect: Literal["boosts", "reduces"], stat: NatureRelevantStat):
-    boosts = True
-    if effect == "reduces":
-        boosts == False
+    boosts: bool
+    if effect == "boosts":
+        boosts = True
+    elif effect == "reduces":
+        boosts = False
     return getSpecificNatures(stat, boosts)

@@ -2,6 +2,7 @@ from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pmgens.pmgen import PmGen, Generation
 from pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
+from pmtypes.typecharts import get_type_chart_for_gen
 from migrations.initialize import defaultTypes
 
 gen1Keys = list(defaultTypes)
@@ -88,25 +89,31 @@ def getPmTypesById(ids: list[int]):
     print(type_list)
 
 def getPmTypesByGeneration(gen: PmGen):
+    generationIds = [1]
+    if gen is not PmGen.GEN1:
+        generationIds.append(2)
+        if gen not in [PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
+            generationIds.append(6)
+    
     generationTypes = {}
     allIds = []
-    result = session.query(PmType).filter_by(generation_id = 1).all()
-    if gen is not PmGen.GEN1:
-        result = result.append(session.query(PmType).filter_by(generation_id = 2).all())
-    if gen not in [PmGen.GEN2, PmGen.GEN3, PmGen.GEN4, PmGen.GEN5]:
-        result = result.append(session.query(PmType).filter_by(generation_id = 6).all())
-
-    for type in result:
+    types = get_all_from_table(PmType)
+    types = [type for type in types if type.generation_id in generationIds]
+    for type in types:
         typedata = {
             "id": type.id,
             "name": type.name,
-            "origin_generation": type.generation.id,
+            "origin_generation": type.generation_id,
         }   
         generationTypes[typedata["name"]] = typedata
         allIds.append(type.id)  
 
-
     return {"info": f"These are the types as they exist in {gen.value}. Their ids are essential for type relationships",
             "types": generationTypes,
             "generation": gen.value,
+            "type_chart": get_type_chart_for_gen(gen),
             "all_ids": allIds}
+            
+def get_all_PmTypes():
+    result = get_all_from_table(PmType)
+    return result
