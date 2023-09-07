@@ -33,7 +33,7 @@ def get_stats_for_a_generation(gen: Union[PmGen, None] = None):
 
 @app.get("/generations")
 def get_generations():
-    return {"info": "These are the generations which currently exist. To reference them with this API use the short_name",
+    return {"info": "These are the generations which currently exist. To reference them with this API use the name",
             "generations": getGenerations()}
 
 @app.get("/generations/supported")

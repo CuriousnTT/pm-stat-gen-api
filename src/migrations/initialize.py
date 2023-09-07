@@ -180,3 +180,51 @@ gen6ToCurrentChanges = {
         "immune_to": ["dragon"]
     }
 }
+
+generations = {
+    "gen1": {
+        "start_year": 1996,
+        "end_year": 1999,
+        "type_chart": 1
+    },
+    "gen2": {
+        "start_year": 1999,
+        "end_year": 2002,
+        "type_chart": 2
+    },
+    "gen3": {
+        "start_year": 2002,
+        "end_year": 2006,
+        "type_chart": 2
+    },
+    "gen4": {
+        "start_year": 2006,
+        "end_year": 2010,
+        "type_chart": 2
+    },
+    "gen5": {
+        "start_year": 2010,
+        "end_year": 2013,
+        "type_chart": 2
+    },
+    "gen6": {
+        "start_year": 2013,
+        "end_year": 2016,
+        "type_chart": 3
+    },
+    "gen7": {
+        "start_year": 2016,
+        "end_year": 2019,
+        "type_chart": 3
+    },
+    "gen8": {
+        "start_year": 2019,
+        "end_year": 2023,
+        "type_chart": 3
+    },
+    "gen9": {
+        "start_year": 2022,
+        "end_year": None,
+        "type_chart": 3
+    }
+}
