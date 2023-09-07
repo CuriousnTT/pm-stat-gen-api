@@ -30,12 +30,12 @@ class PmType(Base):
         return self.name
     
 def getGenerationsForTypes():
-    def q(x):
-        return session.get(Generation, x)
-    gen1 = q(1)
-    gen2 = q(2)
-    gen6 = q(6)
-    return [gen1, gen2, gen6]
+    try:
+        generation_ids = [1,2,6]
+        generations = session.query(Generation).filter(Generation.id.in_(generation_ids)).all()
+        return generations
+    except Exception as error:
+        print(f"Error contacting generation table: {error}")
 
 def addTypeToTable(name, gen:Generation):
     try:
@@ -49,7 +49,7 @@ def addTypeToTable(name, gen:Generation):
         session.rollback()
 
 def getTypesTable():
-    [gen1, gen2, gen6] = getGenerationsForTypes()
+    gen1, gen2, gen6 = getGenerationsForTypes()
 
     for name in gen1Keys:
         addTypeToTable(name, gen1)

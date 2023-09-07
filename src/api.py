@@ -69,7 +69,6 @@ def get_offensive_type_properties(generation: PmGen, attack_type_id: int):
 def get_types(generation: PmGen):
     return getPmTypesByGeneration(generation)
 
-#Breaks
 @app.get("/types/{generation}/{attack_type_id}/{defending_type_id}")
 def get_type_effectiveness_multiplier(generation: PmGen, attack_type_id: int, defending_type_id: int):
     return getPmTypeRelationMultiplier(generation, attack_type_id, defending_type_id)

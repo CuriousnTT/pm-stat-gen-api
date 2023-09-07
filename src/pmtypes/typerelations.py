@@ -45,14 +45,14 @@ def addRelationToTable(attack_type: PmType, defending_type: PmType, type_chart_i
         print(f"Error adding relation to table: {e}")
         session.rollback()
 
-def getDefendingTypeDict(gen_id: int, defending_type_name: str):
-    if gen_id == 1:
+def getDefendingTypeDict(chart_id: int, defending_type_name: str):
+    if chart_id == 1:
         defending_type_dict = defaultTypes[defending_type_name]
-    elif gen_id == 2:
+    elif chart_id == 2:
         defending_type_dict = gen2To5Changes.get(
             defending_type_name, defaultTypes.get(
                 defending_type_name, {}))
-    elif gen_id == 6:
+    elif chart_id == 3:
         defending_type_dict = gen6ToCurrentChanges.get(
             defending_type_name, gen2To5Changes.get(
                 defending_type_name, defaultTypes.get(defending_type_name, {})))
@@ -61,18 +61,18 @@ def getDefendingTypeDict(gen_id: int, defending_type_name: str):
 def getTypeRelationshipTable():
     generation_ids = [1]
 
+    types = session.query(PmType).all()
     for gen in getGenerationsForTypes():
-        gen_id = gen.id
-        types = session.query(PmType).filter(PmType.generation_id.in_(generation_ids)).all()
         chart_id = gen.type_chart_id
+        types_copy = [type for type in types if type.generation.type_chart_id <= chart_id]
 
-        for attack_type in types:
+        for attack_type in types_copy:
             attack_type_name = attack_type.name
 
-            for defending_type in types:
+            for defending_type in types_copy:
                 defending_type_name = defending_type.name
                 defending_type_dict = getDefendingTypeDict(
-                    gen_id, defending_type_name)
+                    chart_id, defending_type_name)
             
                 effectiveness_value = calculate_effectiveness(attack_type_name, defending_type_dict)
             
@@ -102,9 +102,12 @@ def calculate_effectiveness(attack_type_name, defending_type_dict):
 def getPmTypeRelationMultiplier(gen: PmGen, attack_type_id: int, defending_type_id: int):
     try:
         generation = getGenByShortName(gen)
-        relations = session.query(PmTypeRelations).filter_by(attack_type_id=attack_type_id, defending_type_id=defending_type_id).all()
-        relations = [relation for relation in relations if relation.generation_id <= generation.id]
-        return max(relations, key=lambda relation: relation.generation_id)
+        relation = session.query(PmTypeRelations).filter_by(
+            pm_type_chart_id=generation.type_chart_id,
+            attack_type_id=attack_type_id,
+            defending_type_id=defending_type_id
+            ).first()
+        return relation.effectiveness
     except Exception as error:
         print(f"Error contacting type_relationship table: {error}")
         session.rollback()
