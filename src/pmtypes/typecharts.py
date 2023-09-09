@@ -22,6 +22,7 @@ def get_type_chart_table():
                 session.add(pm_chart)
             count += 1
         commit_and_close()
+        print("Type chart table ready")
     except Exception as error:
         print(f"Error adding type chart to table: {error}")
         session.rollback()

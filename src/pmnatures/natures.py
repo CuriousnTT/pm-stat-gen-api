@@ -34,11 +34,6 @@ class PmNature(Base):
         else:
             returnstr = returnstr + " " + f"has better {self.boosts} and worse {self.reduces} than average."
         return returnstr
-    
-    def __repr__(self):
-        return {"name": {self.name},
-                "boosts": {self.boosts},
-                "reduces": {self.reduces}}
 
 hardy = PmNature("Hardy")
 lonely = PmNature("Lonely", NatureRelevantStat.Atk, NatureRelevantStat.Def)

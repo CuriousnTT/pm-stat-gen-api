@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmgens.pmgen import PmGen, Generation
+from pmgens.pmgen import PmGen
+from pmgens.generations import Generation
 from pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
 from pmtypes.typecharts import get_type_chart_for_gen
 from migrations.initialize import defaultTypes
@@ -48,7 +49,7 @@ def addTypeToTable(name, gen:Generation):
         print(f"Error adding type to table: {e}")
         session.rollback()
 
-def getTypesTable():
+def get_types_table():
     gen1, gen2, gen6 = getGenerationsForTypes()
 
     for name in gen1Keys:
@@ -59,6 +60,7 @@ def getTypesTable():
         addTypeToTable(name, gen6)
 
     commit_and_close()
+    print("Type table ready")
 
 def getTypeRelevantPmGen(gen: PmGen):
     value: PmGen = gen

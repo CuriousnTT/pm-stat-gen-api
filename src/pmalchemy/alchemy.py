@@ -28,7 +28,11 @@ def clean_database():
     metadata_obj.drop_all(bind=engine)
 
 def make_database():
-    metadata_obj.create_all(engine)
+    try:
+        metadata_obj.create_all(engine)
+        print("Database successfully set up")
+    except Exception as error:
+        print(f"Error setting up database: {error}")
 
 def get_all_from_table(cls):
     try:

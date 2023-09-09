@@ -2,7 +2,8 @@ from sqlalchemy import Integer, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pmalchemy.alchemy import Base, session, commit_and_close
 from pmtypes.pmtypes import PmType, getGenerationsForTypes
-from pmgens.pmgen import PmGen, getGenByShortName
+from pmgens.pmgen import PmGen
+from pmgens.generations import getGenByShortName
 from migrations.initialize import defaultTypes, gen2To5Changes, gen6ToCurrentChanges
 
 class PmTypeRelations(Base):
@@ -58,7 +59,7 @@ def getDefendingTypeDict(chart_id: int, defending_type_name: str):
                 defending_type_name, defaultTypes.get(defending_type_name, {})))
     return defending_type_dict
 
-def getTypeRelationshipTable():
+def get_type_relationship_table():
     generation_ids = [1]
 
     types = session.query(PmType).all()
@@ -88,6 +89,7 @@ def getTypeRelationshipTable():
             generation_ids.append(6)
     
     commit_and_close()
+    print("Type relationships table ready")
 
 def calculate_effectiveness(attack_type_name, defending_type_dict):
     effectiveness_value = 1.0

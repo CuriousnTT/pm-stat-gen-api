@@ -4,8 +4,9 @@ from fastapi import FastAPI
 
 #Locals
 from pmgens.pmgen import PmGen
-from pmgens.pmgen import SupportedGen, getGenerations
-from pmgens.pmgames import getGames
+from pmgens.pmgen import SupportedGen
+from pmgens.generations import getGenerations
+from pmgens.pmgames import get_games
 from pmstats.basestats import getBaseStats
 from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, get_all_PmTypes
 from pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
@@ -42,12 +43,12 @@ def get_supported_generations():
             "generations": list(SupportedGen)}
 
 @app.get("/games")
-def get_games():
-    return getGames()
+def get_all_games():
+    return get_games()
 
 @app.get("/games/{generation}")
 def get_games_from_one_generation(generation: PmGen):
-    return getGames(generation)
+    return get_games(generation)
 
 @app.get("/types/all")
 def get_all_types():
