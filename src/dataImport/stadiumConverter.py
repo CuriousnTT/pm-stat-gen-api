@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 from pathlib import Path
 
-#If this doesn't show how BAD the module system in python is I don't what will
+#If this doesn't show how BAD the module system in python is I don't know what will!
 curPath = Path.cwd()
 if (curPath.name == "pm-stat-gen-api"):
     sys.path.append(str(curPath))
@@ -45,7 +45,7 @@ class PmStadiumConverter():
         excelFilePath = fpm.FilePathMethods.getDataSetPath(dataSetFilePath, fileExt, fileName)
         properFilePath = str(excelFilePath).replace("\\", "/")
         print("Checking Filepath:" + properFilePath)
-        if (fpm.CURRENTDATASETTYPES[0]): #TODO change filepath and fileName to be input variable for convertion
+        if (fpm.CURRENTDATASETTYPES[0]):
             dforg = pd.ExcelFile(properFilePath)
             wantedSheetNames = [item for item in dforg.sheet_names if "Rental" in item]
             dfrental = pd.read_excel(properFilePath, sheet_name = wantedSheetNames)
