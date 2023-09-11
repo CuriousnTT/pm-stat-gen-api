@@ -76,6 +76,11 @@ defaultTypes = {
         "weak_to": ["ice", "dragon"], 
         "resists": ["fire", "water", "electric", "grass"], 
         "immune_to": [None]
+    },
+    "unknown": {
+        "weak_to": [None],
+        "resists": [None],
+        "immune_to": [None]
     }
 }
 
