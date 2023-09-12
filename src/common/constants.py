@@ -1,5 +1,6 @@
-#doesn't work sadly :(, constants expected to only be used at modular level, meaning we gonna have some duplicate constants
-class Constants:
+from enum import Enum
+
+class Constants(Enum):
     CURRENTDATASETTYPES = ["xlsx"]
     DESIREDCOLUMNS = [ #potentially move this to csv/json file
     "Pokemon", "Level", 

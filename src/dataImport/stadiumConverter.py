@@ -11,15 +11,16 @@ elif (curPath.name == "src"):
 elif (curPath.name == "stadiumConverter"):
     sys.path.append(str(curPath.parent.parent))
 import src.common.filePathMethods as fpm
+from src.common.constants import Constants
 
-DESIREDCOLUMNS = [ #potentially move this to csv/json file
+"""DESIREDCOLUMNS = [ #potentially move this to csv/json file
     "Pokemon", "Level", 
     "Type 1", "Type 2", 
     "Move 1", "Move 2", "Move 3", "Move 4",
     "HP Stat", "Attack Stat", "Defense Stat", "Special Stat", "Special Attack Stat", "Special Defense Stat", "Speed Stat",
     "Attack DV", "Defense DV", "Special DV", "Speed DV",
     "HP IV", "Attack IV", "Defense IV", "Special Attack IV", "Special Defense IV", "Speed IV"
-]
+]"""
 
 class PmStadiumConverter():
     def __init__(self):
@@ -31,12 +32,12 @@ class PmStadiumConverter():
                 return folder
         if limitFolderName in curDir.name:
             return "Desired folder not found" #TODO change this to return exception later
-        self.__checkParentForDesiredFolder(curDir.parent)
+        self.__checkParentForDesiredFolder(curDir.parent, desiredFolderName, limitFolderName)
 
     def __filterUnwantedColumns(self, data : dict):
         for dFrame in data.values():
             for column in dFrame.columns:
-                if column not in DESIREDCOLUMNS:
+                if column not in Constants.DESIREDCOLUMNS:
                     del dFrame[column]
     
     def Converter(self, version : int, fileExt : str, fileName : str):
@@ -45,7 +46,7 @@ class PmStadiumConverter():
         excelFilePath = fpm.FilePathMethods.getDataSetPath(dataSetFilePath, fileExt, fileName)
         properFilePath = str(excelFilePath).replace("\\", "/")
         print("Checking Filepath:" + properFilePath)
-        if (fpm.CURRENTDATASETTYPES[0]):
+        if (Constants.CURRENTDATASETTYPES[0]): #probably change to switch case if python
             dforg = pd.ExcelFile(properFilePath)
             wantedSheetNames = [item for item in dforg.sheet_names if "Rental" in item]
             dfrental = pd.read_excel(properFilePath, sheet_name = wantedSheetNames)
@@ -57,6 +58,12 @@ class PmStadiumConverter():
                 print(str.format("{cup}: {columns}", cup = cup, columns = dFrame.iloc[0]))
             return dfrental
 
-#main        
+    #Collect all csv files for a given game
+    def getAllStadiumData(self, gameName : str):
+        """"""
+
+#main
+print(Constants.CURRENTDATASETTYPES)
+print(Constants.DESIREDCOLUMNS)
 stadConTest = PmStadiumConverter()
-stadConTest.Converter(1, "xlsx", "testDataStadium1")
+stadConTest.Converter(1, "csv", "testDataStadium1")
