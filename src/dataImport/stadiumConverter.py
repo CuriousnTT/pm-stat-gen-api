@@ -23,8 +23,9 @@ from src.common.constants import Constants
 ]"""
 
 class PmStadiumConverter():
-    def __init__(self):
-       pass
+    def __init__(self, datapathName, rootDirectory):
+        self.dataSetPathName = datapathName
+        self.rootDirectory = rootDirectory
 
     def __checkParentForDesiredFolder(self, curDir : Path, desiredFolderName : str, limitFolderName : str):
         for folder in curDir.iterdir():
@@ -39,31 +40,56 @@ class PmStadiumConverter():
             for column in dFrame.columns:
                 if column not in Constants.DESIREDCOLUMNS:
                     del dFrame[column]
-    
-    def Converter(self, version : int, fileExt : str, fileName : str):
-        #TODO add version functionality later
-        dataSetFilePath = stadConTest.__checkParentForDesiredFolder(Path.cwd(), "dataSets", "pm-stat-gen-api")
-        excelFilePath = fpm.FilePathMethods.getDataSetPath(dataSetFilePath, fileExt, fileName)
-        properFilePath = str(excelFilePath).replace("\\", "/")
-        print("Checking Filepath:" + properFilePath)
-        if (Constants.CURRENTDATASETTYPES[0]): #probably change to switch case if python
-            dforg = pd.ExcelFile(properFilePath)
-            wantedSheetNames = [item for item in dforg.sheet_names if "Rental" in item]
-            dfrental = pd.read_excel(properFilePath, sheet_name = wantedSheetNames)
-            stadConTest.__filterUnwantedColumns(dfrental)
-            print("Unnecessary data removed")
-            print("First row value:\n")
-            #TODO here for debugging/testapp, remove when unecessary
-            for cup, dFrame in dfrental.items():
-                print(str.format("{cup}: {columns}", cup = cup, columns = dFrame.iloc[0]))
-            return dfrental
-
+                    
+    def __ConverterSeperateDt(self, gameFolderPath : Path):
+        dataFiles = gameFolderPath.glob()
+        data = {}
+        for file in dataFiles:
+            initdt = pd.read_csv(str(file))
+            self.__filterUnwantedColumns(initdt)
+            data[file.name] = initdt 
+        return data
+           
+    #can be more efficient by using dask.DataFrame
+    def __ConverterAllDt(self, gameFolderPath : Path):
+        dataFiles = gameFolderPath.glob()
+        df_list = (pd.read_csv(str(file)) for file in dataFiles)
+        data = pd.concat(df_list, ignore_index=True)
+        self.__filterUnwantedColumns(data)
+        return data
+            
     #Collect all csv files for a given game
-    def getAllStadiumData(self, gameName : str):
-        """"""
+    def getStadiumData(self, gameNr : int, fileExt : str, split : bool = False, test : bool = False):
+        dataSetPath = self.__checkParentForDesiredFolder(
+            Path.cwd(),
+            self.dataSetPathName,
+            self.rootDirectory)
+        dataSetPath = dataSetPath.joinpath(
+            fileExt,
+            str.format("Stadium{gameNr}Data.{fileExt}", gameNr = gameNr, fileExt = fileExt),
+            "Test" if test else "")
+        return self.__ConverterSeperateDt(dataSetPath) if split else self.__ConverterAllDt(dataSetPath)
 
 #main
-print(Constants.CURRENTDATASETTYPES)
-print(Constants.DESIREDCOLUMNS)
-stadConTest = PmStadiumConverter()
-stadConTest.Converter(1, "csv", "testDataStadium1")
+stadConTest = PmStadiumConverter("dataSets", "pm-stat-gen-api")
+stadConTest.getStadiumData(1, "csv", True, True)
+
+
+#old excel version 
+"""def Converter(self, version : int, fileExt : str, fileName : str):
+    #TODO add version functionality later
+    dataSetFilePath = stadConTest.__checkParentForDesiredFolder(Path.cwd(), "dataSets", "pm-stat-gen-api")
+    excelFilePath = fpm.FilePathMethods.getDataSetPath(dataSetFilePath, fileExt, fileName)
+    properFilePath = str(excelFilePath).replace("\\", "/")
+    print("Checking Filepath:" + properFilePath)
+    if (Constants.CURRENTDATASETTYPES[0]): #probably change to switch case if python
+        dforg = pd.ExcelFile(properFilePath)
+        wantedSheetNames = [item for item in dforg.sheet_names if "Rental" in item]
+        dfrental = pd.read_excel(properFilePath, sheet_name = wantedSheetNames)
+        stadConTest.__filterUnwantedColumns(dfrental)
+        print("Unnecessary data removed")
+        print("First row value:\n")
+        #TODO here for debugging/testapp, remove when unecessary
+        for cup, dFrame in dfrental.items():
+            print(str.format("{cup}: {columns}", cup = cup, columns = dFrame.iloc[0]))
+        return dfrental"""
