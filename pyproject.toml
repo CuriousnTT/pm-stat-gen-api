@@ -5,6 +5,7 @@ description = "An API-service based on fastApi and sqlite3 intended to provide d
 authors = ["CuriousnTT <trygve.taranger2@gmail.com>"]
 license = "MIT License"
 readme = "README.md"
+packages = [{include = "scripts/*"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -12,8 +13,9 @@ fastapi = "^0.103.1"
 sqlalchemy = "^2.0.20"
 uvicorn = "^0.23.2"
 
-
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+initialize = "scripts.initialize:initialize"
