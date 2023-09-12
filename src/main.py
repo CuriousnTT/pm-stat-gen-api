@@ -7,7 +7,7 @@ from pmtypes.pmtypes import get_types_table
 from pmtypes.typecharts import get_type_chart_table
 from pmtypes.typerelations import get_type_relationship_table
 from dataImport.stadiumConverter import PmStadiumConverter
-pmsc = PmStadiumConverter()
+pmsc = PmStadiumConverter("dataSets", "pm-stat-gen-api")
 
 if __name__ == "__main__":
 
@@ -18,7 +18,8 @@ if __name__ == "__main__":
     make_database()
 
     #Collecting pm data
-    rentalStadium1Pms = pmsc.Converter(1, "xlsx", "testDataStadium1")
+    rentalStadium1PmsDict = pmsc.getStadiumData(1, "csv", True, True) #Change last parameter based on env
+    rentalStadium1PmFull = pmsc.getStadiumData(1, "csv", False, True)
     
     #Fill Database
     get_type_chart_table()

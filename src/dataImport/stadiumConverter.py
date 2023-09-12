@@ -13,15 +13,6 @@ elif (curPath.name == "stadiumConverter"):
 import src.common.filePathMethods as fpm
 from src.common.constants import Constants
 
-"""DESIREDCOLUMNS = [ #potentially move this to csv/json file
-    "Pokemon", "Level", 
-    "Type 1", "Type 2", 
-    "Move 1", "Move 2", "Move 3", "Move 4",
-    "HP Stat", "Attack Stat", "Defense Stat", "Special Stat", "Special Attack Stat", "Special Defense Stat", "Speed Stat",
-    "Attack DV", "Defense DV", "Special DV", "Speed DV",
-    "HP IV", "Attack IV", "Defense IV", "Special Attack IV", "Special Defense IV", "Speed IV"
-]"""
-
 class PmStadiumConverter():
     def __init__(self, datapathName, rootDirectory):
         self.dataSetPathName = datapathName
@@ -35,47 +26,49 @@ class PmStadiumConverter():
             return "Desired folder not found" #TODO change this to return exception later
         self.__checkParentForDesiredFolder(curDir.parent, desiredFolderName, limitFolderName)
 
-    def __filterUnwantedColumns(self, data : dict):
-        for dFrame in data.values():
-            for column in dFrame.columns:
-                if column not in Constants.DESIREDCOLUMNS:
-                    del dFrame[column]
-                    
-    def __ConverterSeperateDt(self, gameFolderPath : Path):
-        dataFiles = gameFolderPath.glob()
+    def __filterUnwantedColumns(self, dFrame : dict):
+        for column in dFrame.columns:
+            if column not in Constants.DESIREDCOLUMNS.value:
+                del dFrame[column]
+
+    def __ConverterSeperateDt(self, gameFolderPath : Path, fileExt : str):
+        dataFiles = gameFolderPath.glob("*" + fileExt)
         data = {}
         for file in dataFiles:
-            initdt = pd.read_csv(str(file))
-            self.__filterUnwantedColumns(initdt)
-            data[file.name] = initdt 
+            dt = pd.read_csv(str(file))
+            self.__filterUnwantedColumns(dt)
+            data[file.name.split(".")[0]] = dt
         return data
-           
+
     #can be more efficient by using dask.DataFrame
-    def __ConverterAllDt(self, gameFolderPath : Path):
-        dataFiles = gameFolderPath.glob()
+    def __ConverterAllDt(self, gameFolderPath : Path, fileExt : str):
+        dataFiles = gameFolderPath.glob("*" + fileExt)
         df_list = (pd.read_csv(str(file)) for file in dataFiles)
         data = pd.concat(df_list, ignore_index=True)
         self.__filterUnwantedColumns(data)
         return data
-            
+
     #Collect all csv files for a given game
     def getStadiumData(self, gameNr : int, fileExt : str, split : bool = False, test : bool = False):
+        properFileExt = fileExt if  "." in fileExt else "." + fileExt
         dataSetPath = self.__checkParentForDesiredFolder(
             Path.cwd(),
             self.dataSetPathName,
             self.rootDirectory)
         dataSetPath = dataSetPath.joinpath(
-            fileExt,
-            str.format("Stadium{gameNr}Data.{fileExt}", gameNr = gameNr, fileExt = fileExt),
+            properFileExt.split(".")[1],
+            str.format("Stadium{gameNr}Data", gameNr = gameNr),
             "Test" if test else "")
-        return self.__ConverterSeperateDt(dataSetPath) if split else self.__ConverterAllDt(dataSetPath)
+        return self.__ConverterSeperateDt(dataSetPath, properFileExt) if split else self.__ConverterAllDt(dataSetPath, properFileExt)
 
 #main
 stadConTest = PmStadiumConverter("dataSets", "pm-stat-gen-api")
-stadConTest.getStadiumData(1, "csv", True, True)
+dictdata = stadConTest.getStadiumData(1, "csv", True, True)
+fulldtdata = stadConTest.getStadiumData(1, "csv", False, True)
+for i in range(0,9):
+    print(fulldtdata.iloc[i])
 
-
-#old excel version 
+#old excel version might be useful later regarding sheets manipulation
 """def Converter(self, version : int, fileExt : str, fileName : str):
     #TODO add version functionality later
     dataSetFilePath = stadConTest.__checkParentForDesiredFolder(Path.cwd(), "dataSets", "pm-stat-gen-api")
