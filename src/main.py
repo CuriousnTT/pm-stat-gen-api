@@ -26,4 +26,4 @@ def main():
     get_type_relationship_table()
 
     #Set up API
-    uvicorn.run("src/api:app", host=host, reload=reload)
+    uvicorn.run("api:app", app_dir="src", host=host, reload=reload)

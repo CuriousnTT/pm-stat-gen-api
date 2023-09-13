@@ -16,5 +16,4 @@ def initialize():
     os.environ["ENV"] = args.env
     print(f"Running in {os.environ['ENV']} mode.")
     main()
-
-initialize()
+    
