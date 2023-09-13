@@ -1,18 +1,17 @@
 #Dependencies
 import uvicorn
 import os
-from pmalchemy.alchemy import clean_database, make_database, show_all_tables
-from pmgens.generations import get_generations_table
-from pmgens.pmgames import get_game_table
-from pmtypes.pmtypes import get_types_table
-from pmtypes.typecharts import get_type_chart_table
-from pmtypes.typerelations import get_type_relationship_table
-
-env = os.environ["ENV"]
-host="127.0.0.1"
-reload = True
+from src.pmalchemy.alchemy import clean_database, make_database, show_all_tables
+from src.pmgens.generations import get_generations_table
+from src.pmgens.pmgames import get_game_table
+from src.pmtypes.pmtypes import get_types_table
+from src.pmtypes.typecharts import get_type_chart_table
+from src.pmtypes.typerelations import get_type_relationship_table
 
 def main():
+    env = os.environ["ENV"]
+    host="127.0.0.1"
+    reload = True
     #Set up SQL Database
     #show_all_tables()
     if env != "prod":
@@ -27,4 +26,4 @@ def main():
     get_type_relationship_table()
 
     #Set up API
-    uvicorn.run("api:app", host=host, reload=reload)
+    uvicorn.run("src/api:app", host=host, reload=reload)

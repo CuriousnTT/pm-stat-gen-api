@@ -1,8 +1,8 @@
 from sqlalchemy import Integer, String, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmgens.generations import Generation
-from pmtypes.pmtypes import PmType
-from pmalchemy.alchemy import Base, session
+from src.pmgens.generations import Generation
+from src.pmtypes.pmtypes import PmType
+from src.pmalchemy.alchemy import Base, session
 
 class PmDex(Base):
     __tablename__='pmdex'

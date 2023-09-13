@@ -1,5 +1,5 @@
 from datetime import date
-from pmgens.pmgen import PmGen
+from src.pmgens.pmgen import PmGen
 
 defaultTypes = {
     "normal": {

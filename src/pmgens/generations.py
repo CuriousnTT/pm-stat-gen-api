@@ -1,8 +1,8 @@
 from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
-from migrations.initialize import generations
-from pmgens.pmgen import PmGen, is_supported
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
+from src.migrations.initialize import generations
+from src.pmgens.pmgen import PmGen, is_supported
 
 class Generation(Base):
     __tablename__ = "generation"
