@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmalchemy.alchemy import Base, session, commit_and_close
+from pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
 from pmtypes.pmtypes import PmType, getGenerationsForTypes
 from pmgens.pmgen import PmGen
 from pmgens.generations import getGenByShortName
@@ -9,7 +9,7 @@ from migrations.initialize import defaultTypes, gen2To5Changes, gen6ToCurrentCha
 class PmTypeRelations(Base):
     __tablename__ = 'type_relations'
 
-    pm_type_chart_id: Mapped[int] = mapped_column(
+    type_chart_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('type_charts.id'), primary_key=True)
     attack_type_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('types.id'), primary_key=True)
@@ -27,24 +27,9 @@ class PmTypeRelations(Base):
         self.defending_type_id = defending_type.id
         self.defending_type = defending_type
         self.effectiveness = effectiveness
-        self.pm_type_chart_id = type_chart_id
+        self.type_chart_id = type_chart_id
 
-def addRelationToTable(attack_type: PmType, defending_type: PmType, type_chart_id: int, effectiveness: float):
-    try:
-        relation = session.query(PmTypeRelations).filter_by(
-            pm_type_chart_id=type_chart_id,
-            attack_type=attack_type,
-            defending_type=defending_type).first()
-        if relation is None:
-            relation = PmTypeRelations(
-                attack_type,
-                defending_type,
-                type_chart_id,
-                effectiveness)
-            session.add(relation)
-    except Exception as e:
-        print(f"Error adding relation to table: {e}")
-        session.rollback()
+### Functions used in table setup
 
 def getDefendingTypeDict(chart_id: int, defending_type_name: str):
     if chart_id == 1:
@@ -76,12 +61,12 @@ def get_type_relationship_table():
                     chart_id, defending_type_name)
             
                 effectiveness_value = calculate_effectiveness(attack_type_name, defending_type_dict)
-            
-                addRelationToTable(
-                    attack_type,
-                    defending_type,
-                    chart_id,
-                    effectiveness_value)
+                get_or_create(
+                    PmTypeRelations,
+                    attack_type=attack_type,
+                    defending_type=defending_type,
+                    type_chart_id=chart_id,
+                    effectiveness=effectiveness_value)
                 
         if 2 not in generation_ids:
             generation_ids.append(2)
@@ -101,11 +86,13 @@ def calculate_effectiveness(attack_type_name, defending_type_dict):
         effectiveness_value = 0
     return effectiveness_value
 
+### Functions using typerelations
+
 def getPmTypeRelationMultiplier(gen: PmGen, attack_type_id: int, defending_type_id: int):
     try:
         generation = getGenByShortName(gen)
         relation = session.query(PmTypeRelations).filter_by(
-            pm_type_chart_id=generation.type_chart_id,
+            type_chart_id=generation.type_chart_id,
             attack_type_id=attack_type_id,
             defending_type_id=defending_type_id
             ).first()
@@ -127,7 +114,7 @@ def getDefensiveTypeRelations(gen: PmGen, defending_type: int):
     try:
         generation = getGenByShortName(gen)
         relations = session.query(PmTypeRelations).filter_by(defending_type_id=defending_type).all()
-        relations = [relation for relation in relations if relation.pm_type_chart_id == generation.type_chart_id]      
+        relations = [relation for relation in relations if relation.type_chart_id == generation.type_chart_id]      
         
         return relations
     except Exception as e:
@@ -138,7 +125,7 @@ def getOffensiveTypeRelations(gen: PmGen, attack_type: int):
     try:
         generation = getGenByShortName(gen)
         relations = session.query(PmTypeRelations).filter_by(attack_type_id=attack_type).all()
-        relations = [relation for relation in relations if relation.pm_type_chart_id == generation.type_chart_id]
+        relations = [relation for relation in relations if relation.type_chart_id == generation.type_chart_id]
 
         return relations
     except Exception as e:
