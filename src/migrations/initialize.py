@@ -1,5 +1,6 @@
 from datetime import date
 from pmgens.pmgen import PmGen
+from dataImport.stadiumConverter import dictdata as rental_separated_stadium_1_dict, fulldtdata as rental_full_stadium_1_dict
 
 defaultTypes = {
     "normal": {

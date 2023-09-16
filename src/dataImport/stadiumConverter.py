@@ -2,7 +2,6 @@ import pandas as pd
 import sys
 from pathlib import Path
 
-#If this doesn't show how BAD the module system in python is I don't know what will!
 curPath = Path.cwd()
 if (curPath.name == "pm-stat-gen-api"):
     sys.path.append(str(curPath))
@@ -65,8 +64,6 @@ class PmStadiumConverter():
 stadConTest = PmStadiumConverter("dataSets", "pm-stat-gen-api")
 dictdata = stadConTest.getStadiumData(1, "csv", True, True)
 fulldtdata = stadConTest.getStadiumData(1, "csv", False, True)
-for i in range(0,9):
-    print(fulldtdata.iloc[i])
 
 #old excel version might be useful later regarding sheets manipulation
 """def Converter(self, version : int, fileExt : str, fileName : str):
