@@ -40,3 +40,15 @@ def get_all_from_table(cls):
     except Exception as error:
         print(f"Error contacting {cls.__tablename__} table: {error}")
         session.rollback()
+
+def get_or_create(model, **kwargs):
+    try:
+        instance = session.query(model).filter_by(**kwargs).first()
+        if instance:
+            return instance
+        else:
+            instance = model(**kwargs)
+            session.add(instance)
+    except Exception as error:
+        print(f"Error accessing {model} to get/create object: {error}")
+        session.rollback()

@@ -14,13 +14,13 @@ class Generation(Base):
     game_code: Mapped[str] = mapped_column(String(5), unique=True)
     type_chart_id: Mapped[int] = mapped_column(Integer, ForeignKey('type_charts.id'))
 
-    def __init__(self, id: int, name: str, start_year: int, end_year: int, game_code: str, pm_type_chart_id: int):
+    def __init__(self, id: int, name: str, start_year: int, end_year: int, game_code: str, type_chart_id: int):
         self.id = id
         self.name = name
         self.start_year = start_year
         self.end_year = end_year
         self.game_code = game_code
-        self.type_chart_id = pm_type_chart_id
+        self.type_chart_id = type_chart_id
     
     def __str__(self):
         return f"{self.name}"
@@ -28,7 +28,7 @@ class Generation(Base):
     def __repr__(self):
         return self.name
     
-
+### Functions used in table setup
     
 def get_generations_table():
     id = 0
@@ -36,23 +36,23 @@ def get_generations_table():
         gen_dict = generations[gen.value]
         id += 1
         try:
-            generation = session.query(Generation).filter_by(id=id).first()
-            if generation is None:
-                generation = Generation(
-                    id=id,
-                    name=gen.value,
-                    start_year=gen_dict["start_year"],
-                    end_year=gen_dict["end_year"],
-                    game_code=gen_dict["game_code"],
-                    pm_type_chart_id=gen_dict["type_chart"]
-                    )
-                session.add(generation)
+            get_or_create(
+            Generation,
+            id=id,
+            name=gen.value,
+            start_year=gen_dict["start_year"],
+            end_year=gen_dict["end_year"],
+            game_code=gen_dict["game_code"],
+            type_chart_id=gen_dict["type_chart"],
+            )
         except Exception as error:
             print(f"Error adding generation to table: {error}")
             session.rollback()
     
     commit_and_close()
     print("Generation table ready")
+
+### Functions using generation
 
 def getGenerations():
     generations: Generation = get_all_from_table(Generation)

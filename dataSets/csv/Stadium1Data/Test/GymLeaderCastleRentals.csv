@@ -1,0 +1,10 @@
+Pokemon,Level,Type 1,Type 2,HP Stat,Attack Stat,Defense Stat,Speed Stat,Special Stat,Move 1,Move 2,Move 3,Move 4,Experience,HP Stat Exp,Attack Stat Exp,Defense Stat Exp,Speed Stat Exp,Special Stat Exp,Attack DV,Defense DV,Speed DV,Special DV,Move 1 PP,Move 2 PP,Move 3 PP,Move 4 PP,Nickname,Trainer
+Bulbasaur,50,Grass,Poison,128,78,78,73,93,Leech Seed,Toxic,Body Slam,Razor Leaf,117360,25600,25600,25600,25600,17408,4,4,3,3,10,10,15,25,BULBASAUR,TRAINER
+Ivysaur,50,Grass,Poison,143,91,92,88,108,Razor Leaf,Sleep Powder,Mega Drain,Double-Edge,117360,25600,25600,25600,25600,17408,4,4,3,3,25,15,10,15,IVYSAUR,TRAINER
+Venusaur,50,Grass,Poison,163,111,112,108,128,Leech Seed,Poison Powder,Solar Beam,Take Down,117360,25600,25600,25600,25600,17408,4,4,3,3,10,35,10,20,VENUSAUR,TRAINER
+Charmander,50,Fire,Fire,122,81,72,93,78,Flamethrower,Slash,Seismic Toss,Dig,117360,25600,25600,25600,25600,17408,4,4,3,3,15,20,20,10,CHARMANDER,TRAINER
+Charmeleon,50,Fire,Fire,141,93,87,108,93,Fire Blast,Counter,Dragon Rage,Slash,117360,25600,25600,25600,25600,17408,4,4,3,3,5,20,10,20,CHARMELEON,TRAINER
+Charizard,50,Fire,Flying,161,113,107,128,113,Fly,Dig,Fire Spin,Mimic,117360,25600,25600,25600,25600,17408,4,4,3,3,15,10,15,10,CHARIZARD,TRAINER
+Squirtle,50,Water,Water,127,77,94,71,78,Surf,Blizzard,Dig,Seismic Toss,117360,25600,25600,25600,25600,17408,4,4,3,3,15,5,10,20,SQUIRTLE,TRAINER
+Wartortle,50,Water,Water,142,92,109,86,93,Surf,Counter,Submission,Ice Beam,117360,25600,25600,25600,25600,17408,4,4,3,3,15,20,25,10,WARTORTLE,TRAINER
+Blastoise,50,Water,Water,162,112,129,106,113,Hydro Pump,Bide,Strength,Withdraw,117360,25600,25600,25600,25600,17408,4,4,3,3,5,10,15,40,BLASTOISE,TRAINER

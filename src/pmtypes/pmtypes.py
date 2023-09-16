@@ -2,7 +2,7 @@ from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.pmgens.pmgen import PmGen
 from src.pmgens.generations import Generation
-from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table, get_or_create
 from src.pmtypes.typecharts import get_type_chart_for_gen
 from src.migrations.initialize import defaultTypes
 
@@ -30,6 +30,8 @@ class PmType(Base):
     def __repr__(self):
         return self.name
     
+### Functions used in table setup
+
 def getGenerationsForTypes():
     try:
         generation_ids = [1,2,6]
@@ -38,29 +40,20 @@ def getGenerationsForTypes():
     except Exception as error:
         print(f"Error contacting generation table: {error}")
 
-def addTypeToTable(name, gen:Generation):
-    try:
-        type = session.query(PmType).filter_by(
-            name=name, generation=gen).first()
-        if type is None:
-            type = PmType(name=name, generation=gen)
-            session.add(type)
-    except Exception as e:
-        print(f"Error adding type to table: {e}")
-        session.rollback()
-
 def get_types_table():
     gen1, gen2, gen6 = getGenerationsForTypes()
 
     for name in gen1Keys:
-        addTypeToTable(name, gen1)
+        get_or_create(PmType, name=name, generation=gen1)
     for name in gen2Keys:
-        addTypeToTable(name, gen2)
+        get_or_create(PmType, name=name, generation=gen2)
     for name in gen6Keys:
-        addTypeToTable(name, gen6)
+        get_or_create(PmType, name=name, generation=gen6)
 
     commit_and_close()
     print("Type table ready")
+
+### Functions using types
 
 def getTypeRelevantPmGen(gen: PmGen):
     value: PmGen = gen
