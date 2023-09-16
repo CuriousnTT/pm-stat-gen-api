@@ -11,7 +11,6 @@ if __name__ == "__main__":
 
     #Set up SQL Database
     #show_all_tables()
-    #TODO either remove clean_database after debugging or condition to run only in test environment
     clean_database()
     make_database()
     
