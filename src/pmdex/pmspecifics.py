@@ -1,10 +1,11 @@
 from typing import Union
 from sqlalchemy import Integer, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmalchemy.alchemy import Base
-from pmgens.generations import Generation
-from pmtypes.pmtypes import PmType
-from pmdex.pmforms import PmForm
+from src.pmalchemy.alchemy import Base
+from src.pmgens.generations import Generation
+from src.pmtypes.pmtypes import PmType
+from src.pmdex.pmforms import PmForm
+
 class PmSpecifics(Base):
     __tablename__ = 'pm_specifics'
 

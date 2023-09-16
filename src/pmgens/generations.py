@@ -1,6 +1,6 @@
 from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table, get_or_create
 from src.migrations.initialize import generations
 from src.pmgens.pmgen import PmGen, is_supported
 

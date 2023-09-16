@@ -1,5 +1,5 @@
-from src.pmgens.pmgen import PmGen
 from typing import Union
+from src.pmgens.pmgen import PmGen
 
 class BaseStat:
     def __init__(self, name, short_name):
