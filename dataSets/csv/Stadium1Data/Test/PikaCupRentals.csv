@@ -1,0 +1,10 @@
+Pokemon,Level,Type 1,Type 2,HP Stat,Attack Stat,Defense Stat,Speed Stat,Special Stat,Move 1,Move 2,Move 3,Move 4,Experience,HP Stat Exp,Attack Stat Exp,Defense Stat Exp,Speed Stat Exp,Special Stat Exp,Attack DV,Defense DV,Speed DV,Special DV,Move 1 PP,Move 2 PP,Move 3 PP,Move 4 PP,Nickname,Trainer
+Bulbasaur,15,Grass,Poison,42,23,23,22,28,Leech Seed,Toxic,Mega Drain,Double-Edge,2035,12800,12800,12800,12800,0,0,0,0,0,10,10,10,15,BULBASAUR,TRAINER
+Ivysaur,15,Grass,Poison,47,27,28,27,33,Swords Dance,Body Slam,Solar Beam,Leech Seed,2035,12800,12800,12800,12800,0,0,0,0,0,30,15,10,10,IVYSAUR,TRAINER
+Charmander,15,Fire,Fire,40,24,22,28,24,Fire Blast,Seismic Toss,Strength,Growl,2035,12800,12800,12800,12800,0,0,0,0,0,5,20,15,40,CHARMANDER,TRAINER
+Charmeleon,15,Fire,Fire,46,28,26,33,28,Swords Dance,Mega Kick,Toxic,Ember,2035,12800,12800,12800,12800,0,0,0,0,0,30,5,10,25,CHARMELEON,TRAINER
+Squirtle,15,Water,Water,42,23,28,22,24,Tackle,Dig,Surf,Blizzard,2035,12800,12800,12800,12800,0,0,0,0,0,35,10,15,5,SQUIRTLE,TRAINER
+Wartortle,15,Water,Water,46,28,33,26,28,Body Slam,Bide,Surf,Reflect,2035,12800,12800,12800,12800,0,0,0,0,0,15,10,15,20,WARTORTLE,TRAINER
+Caterpie,15,Bug,Bug,42,18,19,22,15,String Shot,Tackle, , ,3375,12800,12800,12800,12800,0,0,0,0,0,40,35,0,0,CATERPIE,TRAINER
+Metapod,15,Bug,Bug,44,15,25,18,16,Tackle,String Shot, , ,3375,12800,12800,12800,12800,0,0,0,0,0,35,40,0,0,METAPOD,TRAINER
+Butterfree,15,Bug,Flying,47,22,24,30,33,Poison Powder,Hyper Beam,Psywave,Take Down,3375,12800,12800,12800,12800,0,0,0,0,0,35,5,15,20,BUTTERFREE,TRAINER

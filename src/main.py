@@ -17,7 +17,6 @@ if __name__ == "__main__":
     clean_database()
     make_database()
     
-
     #Fill Database
     get_type_chart_table()
     get_evolution_stage_table()
