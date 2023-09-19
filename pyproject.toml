@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pm-stat-gen-api"
+name = "pm_stat_gen_api"
 version = "0.1.0"
 description = "An API-service based on fastApi and sqlite3 intended to provide data on Pokémon"
 authors = ["CuriousnTT <trygve.taranger2@gmail.com>"]
@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/CuriousnTT/pm-stat-gen-api"
 include = ["pmdb/*", "dataSets/*"]
-packages = [{from = ".", include = "src/*"}]
+packages = [{include = "src/*"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
