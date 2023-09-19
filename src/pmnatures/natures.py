@@ -1,11 +1,10 @@
 import enum
+import random
 from typing import Union
-from pmalchemy.alchemy import Base
 from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
-import random
-
-from pmstats.basestats import Atk, Def, SpA, SpD, Spe
+from src.pmalchemy.alchemy import Base
+from src.pmstats.basestats import Atk, Def, SpA, SpD, Spe
 
 class NatureRelevantStat(enum.Enum):
     Atk = Atk.short_name

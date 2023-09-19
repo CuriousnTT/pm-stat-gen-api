@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-from pmalchemy.alchemy import Base, commit_and_close, get_or_create, get_all_from_table
+from src.pmalchemy.alchemy import Base, commit_and_close, get_or_create, get_all_from_table
 class EvolutionStage(Base):
     __tablename__ = 'evolution_stage'
 

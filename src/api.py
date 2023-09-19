@@ -3,14 +3,14 @@ from typing import Union, Literal
 from fastapi import FastAPI
 
 #Locals
-from pmgens.pmgen import PmGen
-from pmgens.pmgen import SupportedGen
-from pmgens.generations import getGenerations
-from pmgens.pmgames import get_games
-from pmstats.basestats import getBaseStats
-from pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, get_all_PmTypes
-from pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
-from pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
+from src.pmgens.pmgen import PmGen
+from src.pmgens.pmgen import SupportedGen
+from src.pmgens.generations import getGenerations
+from src.pmgens.pmgames import get_games
+from src.pmstats.basestats import getBaseStats
+from src.pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, get_all_PmTypes
+from src.pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
+from src.pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
 
 app = FastAPI()
 

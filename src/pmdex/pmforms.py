@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
-from pmdex.pmdex import PmDex, get_by_nat_dex_nr
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
+from src.pmdex.pmdex import PmDex, get_by_nat_dex_nr
 
 class PmForm(Base):
     __tablename__ = 'form'

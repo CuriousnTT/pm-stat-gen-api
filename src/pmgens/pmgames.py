@@ -2,10 +2,10 @@ from typing import Union
 from datetime import date
 from sqlalchemy import String, Integer, ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmgens.pmgen import PmGen
-from pmgens.generations import Generation, getGenByShortName
-from pmalchemy.alchemy import Base, session, get_all_from_table, commit_and_close, get_or_create
-from migrations.initialize import games_dict
+from src.pmgens.pmgen import PmGen
+from src.pmgens.generations import Generation, getGenByShortName
+from src.pmalchemy.alchemy import Base, session, get_all_from_table, commit_and_close, get_or_create
+from src.migrations.initialize import games_dict
 
 class PmGame(Base):
     __tablename__ = "games"

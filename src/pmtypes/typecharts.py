@@ -1,8 +1,8 @@
 from typing import Union
 from sqlalchemy import Integer
 from sqlalchemy.orm import Mapped, mapped_column
-from pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
-from pmgens.pmgen import PmGen
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table
+from src.pmgens.pmgen import PmGen
 
 class PmTypeCharts(Base):
     __tablename__ = 'type_charts'

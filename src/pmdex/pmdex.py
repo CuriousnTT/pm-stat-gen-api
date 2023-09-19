@@ -1,7 +1,9 @@
 from sqlalchemy import Integer, String, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmalchemy.alchemy import Base, session, get_or_create, commit_and_close
-from pmdex.evolutions import EvolutionStage, get_all_evolution_stages
+from src.pmalchemy.alchemy import Base, session, get_or_create, commit_and_close
+from src.pmgens.generations import Generation
+from src.pmtypes.pmtypes import PmType
+from src.pmdex.evolutions import EvolutionStage, get_all_evolution_stages
 
 class PmDex(Base):
     __tablename__='pmdex'

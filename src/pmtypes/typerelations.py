@@ -1,10 +1,10 @@
 from sqlalchemy import Integer, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
-from pmtypes.pmtypes import PmType, getGenerationsForTypes
-from pmgens.pmgen import PmGen
-from pmgens.generations import getGenByShortName
-from migrations.initialize import defaultTypes, gen2To5Changes, gen6ToCurrentChanges
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
+from src.pmtypes.pmtypes import PmType, getGenerationsForTypes
+from src.pmgens.pmgen import PmGen
+from src.pmgens.generations import getGenByShortName
+from src.migrations.initialize import defaultTypes, gen2To5Changes, gen6ToCurrentChanges
 
 class PmTypeRelations(Base):
     __tablename__ = 'type_relations'

@@ -1,6 +1,0 @@
-fastapi
-pandas
-pathlib
-SQLAlchemy
-openpyxl
-uvicorn

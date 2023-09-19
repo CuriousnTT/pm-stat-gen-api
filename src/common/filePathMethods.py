@@ -1,4 +1,5 @@
 from pathlib import Path
+from src.common.constants import Constants
 
 #Broken crap:
 """import sys
@@ -9,8 +10,7 @@ elif (curPath.name == "src"):
     sys.path.append(str(curPath.joinpath("common")))
 elif (curPath.name == "common"):
     sys.path.append(str(curPath))
-from common.constants import Constants"""
-CURRENTDATASETTYPES = ["xlsx"] #remove and replace with whatever bootleg solution to the import issue we find
+from src.common.constants import Constants"""
 
 #Probably could get a better name
 class FilePathMethods:
@@ -18,7 +18,7 @@ class FilePathMethods:
     def getDataSetPath(dataSetFolderPath : Path, dataSetType : str, dataSetFileName : str):
         fileName = dataSetFileName if dataSetType in dataSetFileName else dataSetFileName.split("." + dataSetType)[0]
         print(Path)
-        if dataSetType in CURRENTDATASETTYPES:
+        if dataSetType in Constants.CURRENTDATASETTYPES:
             return Path.joinpath(dataSetFolderPath, dataSetType, str.format("{fileName}.{dataSetType}", fileName = fileName, dataSetType = dataSetType))
         else:
             return None #TODO change this to return exception later

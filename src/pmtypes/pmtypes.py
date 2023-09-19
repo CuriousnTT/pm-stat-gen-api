@@ -1,10 +1,10 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pmgens.pmgen import PmGen
-from pmgens.generations import Generation
-from pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table, get_or_create
-from pmtypes.typecharts import get_type_chart_for_gen
-from migrations.initialize import defaultTypes
+from src.pmgens.pmgen import PmGen
+from src.pmgens.generations import Generation
+from src.pmalchemy.alchemy import Base, session, commit_and_close, get_all_from_table, get_or_create
+from src.pmtypes.typecharts import get_type_chart_for_gen
+from src.migrations.initialize import defaultTypes
 
 gen1Keys = list(defaultTypes)
 gen2Keys = ["dark", "steel"]
