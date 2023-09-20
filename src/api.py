@@ -11,6 +11,8 @@ from src.pmstats.basestats import getBaseStats
 from src.pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, get_all_PmTypes
 from src.pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
 from src.pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
+from src.migrations.initialize import stadium_1_dataframe_dict
+from src.common.dataframe_utils import get_column_values_as_dicts
 
 app = FastAPI()
 
@@ -23,13 +25,17 @@ def read_root():
 def get_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
+@app.get("/stadium/dataframe/tests")
+def get_first_rows_from_stadium_dataframe():
+    return get_column_values_as_dicts(stadium_1_dataframe_dict["PikaCupRentals"], ["Pokemon", "Type 1", "Type 2"])
+
 @app.get("/stats")
 def get_stats_for_a_generation(gen: Union[PmGen, None] = None):
     if gen == None:
         return {"generation": "Defaults to 2 and later",
                 "data": getBaseStats()}
     else:
-        return {"generation": gen, 
+        return {"generation": gen,
                 "data": getBaseStats(gen)}
 
 @app.get("/generations")
