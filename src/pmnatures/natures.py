@@ -1,27 +1,24 @@
-import enum
 import random
 from typing import Union
-from sqlalchemy import Enum, String
-from sqlalchemy.orm import Mapped, mapped_column
-from src.pmalchemy.alchemy import Base
-from src.pmstats.basestats import Atk, Def, SpA, SpD, Spe
-
-class NatureRelevantStat(enum.Enum):
-    Atk = Atk.short_name
-    Def = Def.short_name
-    SpA = SpA.short_name
-    SpD = SpD.short_name
-    Spe = Spe.short_name
+from sqlalchemy import Enum, String, Integer, ForeignKey, or_
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.pmalchemy.alchemy import Base, session, get_or_create, commit_and_close
+from src.pmstats.basestats import Stat
+from src.pmnatures.nature_relevant_stats import NatureRelevantStat as NRS, irrelevant_stats
+from src.migrations.initialize import nature_details
 
 class PmNature(Base):
-    __tablename__ = "pm_nature"
+    __tablename__ = "nature"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(10))
-    boosts: Mapped[Enum] = mapped_column(Enum(NatureRelevantStat), nullable=True)
-    reduces: Mapped[Enum] = mapped_column(Enum(NatureRelevantStat), nullable=True)
+    boosts_id: Mapped[int] = mapped_column(Integer, ForeignKey('stat.id'), nullable=True)
+    reduces_id: Mapped[int] = mapped_column(Integer, ForeignKey('stat.id'), nullable=True)
 
-    def __init__(self, name: str, boosts: Union[NatureRelevantStat, None] = None, reduces: Union[NatureRelevantStat, None] = None):
+    boosts: Mapped[Stat] = relationship('Stat', foreign_keys=[boosts_id], backref='boosting nature')
+    reduces: Mapped[Stat] = relationship('Stat', foreign_keys=[reduces_id], backref='reducing nature')
+
+    def __init__(self, name: str, boosts: Union[Stat, None] = None, reduces: Union[Stat, None] = None):
         self.name = name
         self.boosts = boosts
         self.reduces = reduces
@@ -33,47 +30,36 @@ class PmNature(Base):
         else:
             returnstr = returnstr + " " + f"has better {self.boosts} and worse {self.reduces} than average."
         return returnstr
-
-hardy = PmNature("Hardy")
-lonely = PmNature("Lonely", NatureRelevantStat.Atk, NatureRelevantStat.Def)
-adamant = PmNature("Adamant", NatureRelevantStat.Atk, NatureRelevantStat.SpA)
-naughty = PmNature("Naughty", NatureRelevantStat.Atk, NatureRelevantStat.SpD)
-brave = PmNature("Brave", NatureRelevantStat.Atk, NatureRelevantStat.Spe)
-bold = PmNature("Bold", NatureRelevantStat.Def, NatureRelevantStat.Atk)
-docile = PmNature("Docile")
-impish = PmNature("Impish", NatureRelevantStat.Def, NatureRelevantStat.SpA)
-lax = PmNature("Lax", NatureRelevantStat.Def, NatureRelevantStat.SpD)
-relaxed = PmNature("Relaxed", NatureRelevantStat.Def, NatureRelevantStat.Spe)
-modest = PmNature("Modest", NatureRelevantStat.SpA, NatureRelevantStat.Atk)
-mild = PmNature("Mild", NatureRelevantStat.SpA, NatureRelevantStat.Def)
-bashful = PmNature("Bashful")
-rash = PmNature("Rash", NatureRelevantStat.SpA, NatureRelevantStat.SpD)
-quiet = PmNature("Quiet", NatureRelevantStat.SpA, NatureRelevantStat.Spe)
-calm = PmNature("Calm", NatureRelevantStat.SpD, NatureRelevantStat.Atk)
-gentle = PmNature("Gentle", NatureRelevantStat.SpD, NatureRelevantStat.Def)
-careful = PmNature("Careful", NatureRelevantStat.SpD, NatureRelevantStat.SpA)
-quirky = PmNature("Quirky")
-sassy = PmNature("Sassy", NatureRelevantStat.SpD, NatureRelevantStat.Spe)
-timid = PmNature("Timid", NatureRelevantStat.Spe, NatureRelevantStat.Atk)
-hasty = PmNature("Hasty", NatureRelevantStat.Spe, NatureRelevantStat.Def)
-jolly = PmNature("Jolly", NatureRelevantStat.Spe, NatureRelevantStat.SpA)
-naive = PmNature("Naive", NatureRelevantStat.Spe, NatureRelevantStat.SpD)
-serious = PmNature("Serious")
-
-naturesList = [hardy, lonely, adamant, naughty, brave, bold, docile, impish, lax, relaxed, modest, mild, bashful, rash, quiet, calm, gentle, careful, quirky, sassy, timid, hasty, jolly, naive, serious]
-
+    
+def get_nature_table():
+    stats = session.query(Stat).all()
+    stat_dict = {stat.name: stat for stat in stats}
+    
+    for nature in nature_details:
+        if nature['boosts'] is not None and nature['reduces'] is not None:
+            nature['boosts'] = stat_dict.get(nature['boosts'])
+            nature['reduces'] = stat_dict.get(nature['reduces'])
+        get_or_create(PmNature, name=nature['name'], boosts=nature['boosts'], reduces=nature['reduces'])
+    commit_and_close()
+    print("Nature table ready")
 
 def getNature():
-    return random.choice(naturesList)
+    try:
+        natures = session.query(PmNature).all()
+    except Exception as error:
+        print(f"Error contacting nature table: {error}")
+    else:
+        return random.choice(natures)
 
-def getSpecificNatures(stat: NatureRelevantStat, boosts: bool):
-    specificNatures = []
-    if boosts == True:
-        for x in naturesList:
-            if x.boosts == stat:
-                specificNatures.append(x)
-    elif boosts == False:
-        for x in naturesList:
-            if x.reduces == stat:
-                specificNatures.append(x)
-    return specificNatures
+def getSpecificNatures(stat: NRS, boosts: bool):
+    try:
+        results = session.query(PmNature).filter(
+            or_(
+                PmNature.boosts.has(Stat.name == stat.value) if boosts else None,
+                PmNature.reduces.has(Stat.name == stat.value) if not boosts else None
+            )
+        ).all()
+    except Exception as error:
+        print(f"Error contacting nature table: {error}")
+    else:
+        return results

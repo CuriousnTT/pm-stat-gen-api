@@ -7,10 +7,11 @@ from src.pmgens.pmgen import PmGen
 from src.pmgens.pmgen import SupportedGen
 from src.pmgens.generations import getGenerations
 from src.pmgens.pmgames import get_games
-from src.pmstats.basestats import getBaseStats
+from src.pmstats.basestats import get_generic_base_stats
 from src.pmtypes.pmtypes import getPmTypeById, getPmTypesByGeneration, get_all_PmTypes
 from src.pmtypes.typerelations import getAllPmTypeRelations, getPmTypeRelationMultiplier, getDefensiveTypeRelations, getOffensiveTypeRelations
-from src.pmnatures.natures import getNature, getSpecificNatures, NatureRelevantStat
+from src.pmnatures.natures import getNature, getSpecificNatures
+from src.pmnatures.nature_relevant_stats import NatureRelevantStat
 from src.migrations.initialize import stadium_1_dataframe_dict
 from src.common.dataframe_utils import get_column_values_as_dicts
 
@@ -33,10 +34,10 @@ def get_first_rows_from_stadium_dataframe():
 def get_stats_for_a_generation(gen: Union[PmGen, None] = None):
     if gen == None:
         return {"generation": "Defaults to 2 and later",
-                "data": getBaseStats()}
+                "data": get_generic_base_stats()}
     else:
         return {"generation": gen,
-                "data": getBaseStats(gen)}
+                "data": get_generic_base_stats(gen)}
 
 @app.get("/generations")
 def get_generations():

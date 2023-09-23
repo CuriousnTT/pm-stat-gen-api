@@ -7,7 +7,7 @@ class PmForm(Base):
     __tablename__ = 'form'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    nat_dex_nr: Mapped[int] = mapped_column(Integer, ForeignKey('pmdex.nat_dex_nr'))
+    nat_dex_nr: Mapped[int] = mapped_column(Integer, ForeignKey('pmdex.nat_dex_nr'), primary_key=True)
     form_name: Mapped[str] = mapped_column(String(20), unique=True)
 
     pokemon: Mapped[PmDex] = relationship('PmDex', foreign_keys=[nat_dex_nr], backref='forms')

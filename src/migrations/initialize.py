@@ -2,6 +2,44 @@ from datetime import date
 from src.pmgens.pmgen import PmGen
 from src.dataImport.stadiumConverter import dictdata as stadium_1_dataframe_dict, fulldtdata as stadium_1_dataframe
 
+stats = [
+    "hit points",
+    "attack",
+    "defense",
+    "special",
+    "speed",
+    "special attack",
+    "special defense"
+]
+
+nature_details = [
+    {"name":"hardy", "boosts": None, "reduces": None},
+    {"name":"lonely", "boosts": "attack", "reduces": "defense"},
+    {"name": "adamant", "boosts": "attack", "reduces": "special attack"},
+    {"name": "naughty", "boosts": "attack", "reduces": "special defense"},
+    {"name": "brave", "boosts": "attack", "reduces": "speed"},
+    {"name": "bold", "boosts": "defense", "reduces": "attack"},
+    {"name": "docile", "boosts": None, "reduces": None},
+    {"name": "impish", "boosts": "defense", "reduces": "special attack"},
+    {"name": "lax", "boosts": "defense", "reduces": "special defense"},
+    {"name": "relaxed", "boosts": "defense", "reduces": "speed"},
+    {"name": "modest", "boosts": "special attack", "reduces": "attack"},
+    {"name": "mild", "boosts": "special attack", "reduces": "defense"},
+    {"name": "bashful", "boosts": None, "reduces": None},
+    {"name": "rash", "boosts": "special attack", "reduces": "special defense"},
+    {"name": "quiet", "boosts": "special attack", "reduces": "speed"},
+    {"name": "calm", "boosts": "special defense", "reduces": "attack"},
+    {"name": "gentle", "boosts": "special defense", "reduces": "defense"},
+    {"name": "careful", "boosts": "special defense", "reduces": "special attack"},
+    {"name": "quirky", "boosts": None, "reduces": None},
+    {"name": "sassy", "boosts": "special defense", "reduces": "speed"},
+    {"name": "timid", "boosts": "speed", "reduces": "attack"},
+    {"name": "hasty", "boosts": "speed", "reduces": "defense"},
+    {"name": "jolly", "boosts": "speed", "reduces": "special attack"},
+    {"name": "naive", "boosts": "speed", "reduces": "special defense"},
+    {"name": "serious", "boosts": None, "reduces": None},
+]
+
 defaultTypes = {
     "normal": {
         "weak_to": ["fighting"], 

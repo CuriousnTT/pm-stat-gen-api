@@ -16,7 +16,7 @@ class PmSpecifics(Base):
     form_id: Mapped[int] = mapped_column(Integer, ForeignKey('form.id'))
     male_ratio: Mapped[float] = mapped_column(Float)
 
-    def __init__(self, generation: Generation, primary_type: PmType, secondary_type: PmType, form: PmForm, male_ratio: float):
+    def __init__(self, generation: Generation, primary_type: PmType, secondary_type: PmType, form: PmForm, male_ratio: float, ability: None):
         self.gen_id = generation.id
         self.primary_type_id = primary_type.id
         self.secondary_type_id = secondary_type.id
