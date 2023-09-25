@@ -12,6 +12,7 @@ class PmDex(Base):
     name: Mapped[str] = mapped_column(String(20), unique=True)
     dex_header: Mapped[str] = mapped_column(String(45))
     evolution_stage_id: Mapped[int] = mapped_column(Integer, ForeignKey('evolution_stage.id'))
+    
     evolution_stage: Mapped[EvolutionStage] = relationship('EvolutionStage', foreign_keys=[evolution_stage_id])
 
     def __init__(self, nat_dex_nr: int, name: str, dex_header: str, evolution_stage: EvolutionStage):

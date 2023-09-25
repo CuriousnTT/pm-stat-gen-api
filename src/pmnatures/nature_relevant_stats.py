@@ -1,6 +1,6 @@
 from enum import Enum
 from src.pmalchemy.alchemy import session
-from src.pmstats.basestats import Stat
+from src.migrations.initialize import stats
 
 irrelevant_stats = [
     "hit points",
@@ -10,6 +10,4 @@ irrelevant_stats = [
 class NatureRelevantStat(Enum):
     pass
 
-stats = session.query(Stat).filter(Stat.name.not_in(irrelevant_stats)).all()
-
-NatureRelevantStat = Enum("NatureRelevantStat", [(stat.name, stat.name) for stat in stats])
+NatureRelevantStat = Enum("NatureRelevantStat", [(stat, stat) for stat in stats if stat not in irrelevant_stats])

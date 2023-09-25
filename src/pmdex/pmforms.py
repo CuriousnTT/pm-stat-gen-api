@@ -3,6 +3,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
 from src.pmdex.pmdex import PmDex, get_by_nat_dex_nr
 
+current_form_id: int = 0
+
 class PmForm(Base):
     __tablename__ = 'form'
 
@@ -13,9 +15,11 @@ class PmForm(Base):
     pokemon: Mapped[PmDex] = relationship('PmDex', foreign_keys=[nat_dex_nr], backref='forms')
 
     def __init__(self, pokemon: PmDex, form_name: str):
-        self.id = self.id
         self.nat_dex_nr = pokemon.nat_dex_nr
         self.form_name = form_name
+        global current_form_id
+        current_form_id += 1
+        self.id = current_form_id
 
     def __repr__(self):
         return self.form_name

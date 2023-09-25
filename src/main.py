@@ -2,7 +2,6 @@
 import uvicorn
 import os
 from src.pmalchemy.alchemy import clean_database, make_database, show_all_tables
-from src.pmstats.basestats import get_stat_table
 from src.pmdex.evolutions import get_evolution_stage_table
 from src.pmdex.pmdex import four_test_inserts
 from src.pmdex.pmforms import four_test_pms
@@ -26,14 +25,13 @@ def main():
     #Fill Database
     get_type_chart_table()
     get_evolution_stage_table()
-    get_stat_table()
     get_nature_table()
     get_generations_table()
-    four_test_inserts()
-    #four_test_pms()
     get_game_table()
     get_types_table()
     get_type_relationship_table()
+    four_test_inserts()
+    four_test_pms()
 
     #Set up API
     uvicorn.run("api:app", app_dir="src", host=host, reload=reload)
