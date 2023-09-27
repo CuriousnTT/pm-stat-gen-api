@@ -28,9 +28,6 @@ class PmNature(Base):
         return returnstr
     
 def get_nature_table():
-    stats = session.query(Stat).all()
-    stat_dict = {stat.name: stat for stat in stats}
-    
     for nature in nature_details:
         get_or_create(PmNature, name=nature['name'], boosts=nature['boosts'], reduces=nature['reduces'])
     commit_and_close()

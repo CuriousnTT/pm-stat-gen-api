@@ -66,22 +66,22 @@ def getTypeRelevantPmGen(gen: PmGen):
 def getPmTypeById(id: int):
     pmtype = session.get(PmType, id)
     if pmtype is not None:
-        info = {"type_name": pmtype.name,
-                "type_id": pmtype.id,
-                "generation_id": pmtype.generation.id}
-        return info
+        return pmtype
     
 def getPmTypesById(ids: list[int]):
-    type_list = {}
+    type_list = []
     for id in ids:
         pmtype = getPmTypeById(id)
-        type_data = {
-            "id": pmtype["type_id"],
-            "name": pmtype["type_name"],
-            "origin_generation": pmtype["generation_id"],
-        }
-        type_list[type_data["id"]] = type_data
-    print(type_list)
+        type_list.append(pmtype)
+    return type_list
+
+def get_pmtype_by_name(name: str):
+    try:
+        pmtype = session.query(PmType).filter_by(name=name).first()
+    except Exception as error:
+        print(f"Error getting type from table: {error}")
+    else:
+        return pmtype
 
 def getPmTypesByGeneration(gen: PmGen):
     generationIds = [1]

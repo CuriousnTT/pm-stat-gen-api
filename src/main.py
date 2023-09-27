@@ -5,6 +5,7 @@ from src.pmalchemy.alchemy import clean_database, make_database, show_all_tables
 from src.pmdex.evolutions import get_evolution_stage_table
 from src.pmdex.pmdex import four_test_inserts
 from src.pmdex.pmforms import four_test_pms
+from src.pmdex.pmsummary import nine_test_forms
 from src.pmgens.generations import get_generations_table
 from src.pmgens.pmgames import get_game_table
 from src.pmnatures.natures import get_nature_table
@@ -32,6 +33,7 @@ def main():
     get_type_relationship_table()
     four_test_inserts()
     four_test_pms()
+    nine_test_forms()
 
     #Set up API
     uvicorn.run("api:app", app_dir="src", host=host, reload=reload)

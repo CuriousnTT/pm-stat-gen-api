@@ -3,6 +3,7 @@ from typing import Union, Literal
 from fastapi import FastAPI
 
 #Locals
+from src.pmdex.pmsummary import get_summaries_by_dex_nr, get_summaries_by_gen_and_dex_nr
 from src.pmgens.pmgen import PmGen
 from src.pmgens.pmgen import SupportedGen
 from src.pmgens.generations import getGenerations
@@ -25,6 +26,14 @@ def read_root():
 #Example to be removed/replaced when items are implemented
 def get_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
+
+@app.get("/dex/{nr}")
+def get_all_data_on_a_pokemon(nr: int):
+    return get_summaries_by_dex_nr(nr)
+
+@app.get("/dex/{gen}/{dex_nr}")
+def get_all_data_on_a_pokemon_in_generation(gen: PmGen, dex_nr: int):
+    return get_summaries_by_gen_and_dex_nr(gen, dex_nr)
 
 @app.get("/stadium/dataframe/tests")
 def get_first_rows_from_stadium_dataframe():

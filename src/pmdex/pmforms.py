@@ -3,29 +3,22 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.pmalchemy.alchemy import Base, session, commit_and_close, get_or_create
 from src.pmdex.pmdex import PmDex, get_by_nat_dex_nr
 
-current_form_id: int = 0
-
 class PmForm(Base):
     __tablename__ = 'form'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    nat_dex_nr: Mapped[int] = mapped_column(Integer, ForeignKey('pmdex.nat_dex_nr'), primary_key=True)
+    nat_dex_nr: Mapped[int] = mapped_column(Integer, ForeignKey('pmdex.nat_dex_nr'))
     form_name: Mapped[str] = mapped_column(String(20), unique=True)
 
     pokemon: Mapped[PmDex] = relationship('PmDex', foreign_keys=[nat_dex_nr], backref='forms')
 
     def __init__(self, pokemon: PmDex, form_name: str):
+        self.id = self.id
         self.nat_dex_nr = pokemon.nat_dex_nr
         self.form_name = form_name
-        global current_form_id
-        current_form_id += 1
-        self.id = current_form_id
-
-    def __repr__(self):
-        return self.form_name
+        self.pokemon = pokemon
 
 ### Functions used in table setup
-
 
 def get_test_insert_dicts():
     rotom = get_by_nat_dex_nr(479)
@@ -80,11 +73,25 @@ def add_form_to_table(dict):
 def four_test_pms():
     dicts = get_test_insert_dicts()
     pokemon = []
-    for dict in dicts:
-        pm: PmDex = dict["pokemon"]
-        add_form_to_table(dict)
-        print(dict["form_name"])
-        pokemon.append(pm.name)
-    commit_and_close()
-    pm_set = {pokemon for pokemon in pokemon}
-    print(f"test data inserted in pmforms for: {pm_set}")
+    try:
+        for dict in dicts:
+            pm: PmDex = dict["pokemon"]
+            add_form_to_table(dict)
+            print(dict["form_name"])
+            pokemon.append(pm.name)
+    except Exception as error:
+        print(f"Error adding test pms to PmForms: {error}")
+        session.rollback()
+    else:
+        commit_and_close()
+        print("test data inserted in pmforms")
+
+### Functions using form
+
+def get_form_by_name(name: str):
+    try:
+        form = session.query(PmForm).filter_by(form_name=name).first()
+    except Exception as error:
+        print(f"Error occurred when getting form from table: {error}")
+    else:
+        return form

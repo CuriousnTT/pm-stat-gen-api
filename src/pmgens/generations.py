@@ -24,9 +24,6 @@ class Generation(Base):
     
     def __str__(self):
         return f"{self.name}"
-
-    def __repr__(self):
-        return self.name
     
 ### Functions used in table setup
     
@@ -55,9 +52,9 @@ def get_generations_table():
 ### Functions using generation
 
 def getGenerations():
-    generations: Generation = get_all_from_table(Generation)
+    gens = get_all_from_table(Generation)
     result = []
-    for generation in generations:
+    for generation in gens:
 
         gen = {"id": generation.id,
                "name": generation.name,
