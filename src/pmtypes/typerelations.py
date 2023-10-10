@@ -16,6 +16,7 @@ class PmTypeRelations(Base):
     defending_type_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('types.id'), primary_key=True)
     effectiveness: Mapped[float] = mapped_column(Float)
+    
     attack_type: Mapped[PmType] = relationship(
         'PmType', foreign_keys=[attack_type_id])
     defending_type: Mapped[PmType] = relationship(

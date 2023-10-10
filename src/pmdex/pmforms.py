@@ -67,7 +67,7 @@ def add_form_to_table(dict):
             form = PmForm(pokemon, form_name)
             session.add(form)
     except Exception as error:
-        print(f"An error occurred when adding form to table: {error}")
+        print(f"Error adding form to table: {error}")
         session.rollback()
 
 def four_test_pms():
@@ -77,7 +77,6 @@ def four_test_pms():
         for dict in dicts:
             pm: PmDex = dict["pokemon"]
             add_form_to_table(dict)
-            print(dict["form_name"])
             pokemon.append(pm.name)
     except Exception as error:
         print(f"Error adding test pms to PmForms: {error}")
@@ -92,6 +91,6 @@ def get_form_by_name(name: str):
     try:
         form = session.query(PmForm).filter_by(form_name=name).first()
     except Exception as error:
-        print(f"Error occurred when getting form from table: {error}")
+        print(f"Error getting form from table: {error}")
     else:
         return form

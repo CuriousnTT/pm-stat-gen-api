@@ -77,4 +77,4 @@ def get_by_nat_dex_nr(nr: int):
         entry = session.get(PmDex, nr)
         return entry
     except Exception as error:
-        print(f"An error occurred when contacting pmdex: {error}")
+        print(f"Error contacting pmdex: {error}")
