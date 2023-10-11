@@ -26,10 +26,9 @@ class PmSummaryData:
 class PmSummary(Base):
     __tablename__ = 'pm_summary'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    gen_id: Mapped[int] = mapped_column(Integer, ForeignKey('generation.id'))
-    form_id: Mapped[int] = mapped_column(Integer, ForeignKey('form.id'))
-    nat_dex_nr: Mapped[int] = mapped_column(Integer, ForeignKey('form.nat_dex_nr'))
+    gen_id: Mapped[int] = mapped_column(Integer, ForeignKey('generation.id'), primary_key=True)
+    form_id: Mapped[int] = mapped_column(Integer, ForeignKey('form.id'), primary_key=True)
+    nat_dex_nr: Mapped[int] = mapped_column(Integer, ForeignKey('form.nat_dex_nr'), primary_key=True)
     primary_type_id: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'))
     secondary_type_id: Mapped[int] = mapped_column(Integer, ForeignKey('types.id'), nullable=True)
     hit_points: Mapped[int] = mapped_column(Integer)
@@ -47,10 +46,6 @@ class PmSummary(Base):
         primaryjoin='and_(PmSummary.form_id == PmForm.id, PmSummary.nat_dex_nr == PmForm.nat_dex_nr)', backref='summaries')
     primary_type: Mapped[PmType] = relationship('PmType', foreign_keys=[primary_type_id], backref='primary_type_summaries')
     secondary_type: Mapped[PmType] = relationship('PmType', foreign_keys=[secondary_type_id], backref='secondary_type_summaries')
-
-    __table_args__ = (
-        UniqueConstraint('gen_id', 'form_id', 'nat_dex_nr'),
-    )
 
     def __init__(
         self,
