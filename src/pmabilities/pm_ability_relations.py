@@ -22,8 +22,8 @@ class PmHasAbility(Base):
     ability_id: Mapped[int] = mapped_column(Integer, ForeignKey('ability.id'), primary_key=True)
     is_hidden: Mapped[bool] = mapped_column(Boolean)
 
-    ability = relationship(Ability, foreign_keys=[ability_id], backref="pm_summaries")
-    pm_summary = relationship(PmSummary, foreign_keys=[gen_id, form_id, nat_dex_nr], backref="abilities")
+    ability = relationship(Ability, foreign_keys=[ability_id],back_populates='pm_with_ability', lazy='joined')
+    pm_summary = relationship(PmSummary, foreign_keys=[gen_id, form_id, nat_dex_nr], back_populates='abilities', lazy='joined')
 
     __table_args__ = (
         ForeignKeyConstraint(

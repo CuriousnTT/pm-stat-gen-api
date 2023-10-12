@@ -3,6 +3,7 @@ from typing import Union, Literal
 from fastapi import FastAPI
 
 #Locals
+from src.pmabilities.abilities import get_ability_by_name as get_ability
 from src.pmdex.pmsummary import get_summaries_by_dex_nr, get_summaries_by_gen_and_dex_nr
 from src.pmgens.pmgen import PmGen
 from src.pmgens.pmgen import SupportedGen
@@ -34,6 +35,10 @@ def get_all_data_on_a_pokemon(nr: int):
 @app.get("/dex/{gen}/{dex_nr}")
 def get_all_data_on_a_pokemon_in_generation(gen: PmGen, dex_nr: int):
     return get_summaries_by_gen_and_dex_nr(gen, dex_nr)
+
+@app.get("/ability/{name}")
+def get_ability_by_name(name: str, full: Union[bool, None] = None):
+    return get_ability(name, full=full)
 
 @app.get("/stadium/dataframe/tests")
 def get_first_rows_from_stadium_dataframe():

@@ -1,6 +1,6 @@
-from typing import Union
+from typing import Union, List
 from dataclasses import dataclass
-from sqlalchemy import Integer, Float, ForeignKey, UniqueConstraint, and_
+from sqlalchemy import Integer, Float, ForeignKey, and_
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.pmalchemy.alchemy import Base, session, get_or_create, commit_and_close
 from src.pmgens.generations import Generation, getGenByShortName
@@ -43,9 +43,10 @@ class PmSummary(Base):
     form: Mapped[PmForm] = relationship(
         'PmForm',
         foreign_keys=[form_id, nat_dex_nr],
-        primaryjoin='and_(PmSummary.form_id == PmForm.id, PmSummary.nat_dex_nr == PmForm.nat_dex_nr)', backref='summaries')
-    primary_type: Mapped[PmType] = relationship('PmType', foreign_keys=[primary_type_id], backref='primary_type_summaries')
-    secondary_type: Mapped[PmType] = relationship('PmType', foreign_keys=[secondary_type_id], backref='secondary_type_summaries')
+        primaryjoin='and_(PmSummary.form_id == PmForm.id, PmSummary.nat_dex_nr == PmForm.nat_dex_nr)', backref='summaries', lazy='joined')
+    primary_type: Mapped[PmType] = relationship('PmType', foreign_keys=[primary_type_id], backref='primary_type_summaries', lazy='joined')
+    secondary_type: Mapped[PmType] = relationship('PmType', foreign_keys=[secondary_type_id], backref='secondary_type_summaries', lazy='joined')
+    abilities: Mapped[List['PmHasAbility']] = relationship('PmHasAbility', back_populates='pm_summary', lazy='joined')
 
     def __init__(
         self,
@@ -268,6 +269,9 @@ def get_summaries_by_dex_nr(dex_nr: int):
     except Exception as error:
         print(f"Error getting summaries from table: {error}")
     else:
+        for summary in response:
+            if summary.abilities:
+                pass
         return response
 
 def get_summaries_by_gen_and_dex_nr(gen: PmGen, dex_nr: int):

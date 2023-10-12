@@ -1,13 +1,16 @@
+from typing import List
 from sqlalchemy import Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.pmalchemy.alchemy import Base, get_or_create, commit_and_close, session
-
+from src.pmdex.pmsummary import PmSummary
 class Ability(Base):
     __tablename__='ability'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)
+
+    pm_with_ability: Mapped[List['PmHasAbility']] = relationship(back_populates="ability")
 
     def __init__(self, name: str, description: str):
         self.name = name
@@ -73,9 +76,11 @@ def some_test_abilities():
 
 ### Functions using table ability
 
-def get_ability_by_name(name: str):
+def get_ability_by_name(name: str, full: bool = False):
     try:
         ability = session.query(Ability).filter_by(name=name).first()
+        if full == True:
+            ability.pm_with_ability
     except Exception as error:
         print(f"Error getting ability from table: {error}")
         session.rollback()
